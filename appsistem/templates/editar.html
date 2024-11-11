@@ -1,0 +1,255 @@
+{% extends 'index.html' %}
+{% block 'content'%} 
+
+
+        <div class="card-body">
+            <h3 style="text-align: center; margin-top: 2rem; margin-bottom: 2.5rem;">Editar Proyectos</h3> 
+            </div>
+        <form method="POST" enctype="multipart/form-data" id="form" >
+            {% csrf_token %}
+            <div class="form-floating mb-3">
+              <input
+                class="form-control"
+                id=""
+                type="text"
+                name="titulo"
+                placeholder="titulo"
+                value="{{form.titulo.value|default:''}}"
+              />
+              <label class="floatingInput" for="titulo">Titulo del Proyecto</label>
+              {{form.titulo.errors}}
+            </div>
+            <div class="form-floating mb-3">
+              <input
+                class="form-control"
+                id="titulo"
+                type="text"
+                name="autores"
+                placeholder="autores"
+                value="{{form.autores.value|default:''}}"
+              />
+              <label class="floatingInput" for="autores">Autores</label>
+              {{form.autores.errors}}
+            </div>
+    
+            <div class="form-floating mb-3">
+              <input
+                class="form-control"
+                id="cedula"
+                type="text"
+                name="cedula"
+                placeholder="Cedula"
+                value="{{form.cedula.value|default:''}}"
+              />
+              <label class="floatingInput" for="cedula">Cedula de Identidad de los Estudiantes</label>
+              {{form.cedula.errors}}
+            </div>
+    
+            <div class="form-floating mb-3">
+              <input
+                class="form-control"
+                id="descripcion"
+                type="text"
+                name="descripcion"
+                placeholder="descripcion"
+                value="{{form.descripcion.value|default:''}}"
+              />
+              <label class="floatingInput" for="descripcion">Descripción</label>
+              {{form.descripcion.errors}}
+            </div>
+    
+           
+            <div class="form-floating mb-3">
+              <select
+                class="form-select"
+                id=""
+                name="seccion"
+                aria-label="Floating label select example" 
+                >
+                <option value="">Seleccione</option>
+               {%for seccion in secciones%}
+               {% if seccion.id == form.seccion.value%}
+                <option value="{{seccion.id}}" selected>{{seccion.seccion_estudiante}}</option>
+                {% else %}
+                <option value="{{seccion.id}}" >{{seccion.seccion_estudiante}}</option>
+                {%endif%}
+                {%endfor%}
+              </select>
+              <label for="seccion">Seccion</label>
+              {{form.seccion.errors}}
+            
+            </div>
+    
+    
+            <div class="form-floating mb-3">
+              <input
+                class="form-control"
+                id="estado"
+                type="text"
+                name="estado"
+                placeholder="Estado"
+                value="{{form.estado.value|default:''}}"
+              />
+              <label class="floatingInput" for="estado"
+                >Estado</label
+              >
+              {{form.estado.errors}}
+            </div>
+    
+            <div class="form-floating mb-3">
+              <input
+                class="form-control"
+                id="parroquia"
+                type="text"
+                name="parroquia"
+                placeholder="parroquia"
+                value="{{form.parroquia.value|default:''}}"
+              />
+              <label class="floatingInput" for="parroquia"
+                >Parroquia</label
+              >
+              {{form.parroquia.errors}}
+            </div>
+    
+    
+            <div class="form-floating mb-3">
+              <input
+                class="form-control"
+                id="municipio"
+                type="text"
+                name="municipio"
+                placeholder="municipio"
+                value="{{form.municipio.value|default:''}}"
+              />
+              <label class="floatingInput" for="municipio"
+                >Municipio</label
+              >
+              {{form.municipio.errors}}
+            </div>
+          
+          
+            <div class="form-floating mb-3">
+              <input
+                class="form-control"
+                id="nombre"
+                type="text"
+                name="nombre_comunidad"
+                placeholder="nombre de la comunidad"
+                value="{{form.nombre_comunidad.value|default:''}}"
+              />
+              <label class="floatingInput" for="nombre_comunidad"
+                >Nombre de la Comunidad</label
+              >
+              {{form.nombre_comunidad.errors}}
+            </div>
+    
+            <div class="form-floating mb-3">
+              <input
+                class="form-control"
+                id="palabras"
+                type="text"
+                name="palabras_clave"
+                placeholder="palabras_claves"
+                value="{{form.palabras_clave.value|default:''}}"
+              />
+              <label class="floatingInput" for="palabras_clave"
+                >Palabras Claves</label
+              >
+              {{form.palabras_clave.errors}}
+            </div>
+            <div class="form-floating mb-3">
+              <input
+                type="date"
+                class="form-control"
+                id="fecha"
+                name="fecha_creacion"
+                value="{{form.fecha_creacion.value|date:'Y-m-d'}}"
+              />
+              <label for="fecha">Fecha de Creación</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input
+                class="form-control"
+                id="tutor"
+                type="text"
+                name="tutor"
+                placeholder="tutor"
+                value="{{form.tutor.value|default:''}}"
+              />
+              <label class="floatingInput" for="tutor">Tutor</label>
+              {{form.tutor.errors}}
+            </div>
+    
+            <div class="form-floating mb-3">
+              <input
+                class="form-control"
+                id=""
+                type="text"
+                name="tutor_metodologico"
+                placeholder="tutor metodologico"
+                value="{{form.tutor_metodologico.value|default:''}}"
+              />
+              <label class="floatingInput" for="tutor_metodologico"
+                >Tutor metodologico</label
+              >
+              {{form.tutor_metodologico.errors}}
+            </div>
+    
+    
+            <div class="form-floating mb-3">
+              <select
+                class="form-select"
+                id="pnf"
+                name="pnf"
+                aria-label="Floating label select example" >
+                <option value="">Seleccione</option>
+                {%for pnf in pnfs%}
+                {% if pnf.id == form.pnf.value%}
+                <option value="{{pnf.id}}" selected>{{pnf.nombre_pnf}}</option>
+              {%else%}
+                <option value="{{pnf.id}}">{{pnf.nombre_pnf}}</option>
+                {%endif%}
+                {%endfor%}
+              </select>
+              <label for="pnf">Carrera</label>
+              {{form.pnf.errors}}
+            </div>
+            <div class="form-floating mb-3">
+              <select
+                class="form-select"
+                id="trayecto"
+                name="trayecto"
+                aria-label="Floating label select example"
+              >
+                <option value="">Seleccione</option>
+                {%for trayecto in trayectos%}
+                {% if trayecto.id == form.trayecto.value%}
+                <option value="{{trayecto.id}}" selected>{{trayecto.nombre_trayecto}}</option>
+                {%else%}
+                <option value="{{trayecto.id}}">{{trayecto.nombre_trayecto}}</option>
+                {%endif%}
+                {%endfor%}
+              </select>
+              <label for="trayecto">Trayecto</label>
+              {{form.pnf.errors}}
+            </div>
+            <div class="d-flex align-items-center justify-content-center mt-4 mb-0">
+              <input type="hidden" name="usuario" value="{{user.id}}" />
+              <button
+                class="btn btn-primary"
+                type="submit"
+                style="
+                  padding-top: 1rem;
+                  padding-bottom: 1rem;
+                  padding-right: 3rem;
+                  padding-left: 3rem;
+                  background-color: rgb(206, 25, 25);
+                  border: solid rgb(206, 25, 25);
+                  border-radius: 2rem;
+                "
+              >
+                Guardar
+              </button>
+            </div>
+          </form>
+          {% endblock%}

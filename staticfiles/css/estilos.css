@@ -1,0 +1,185 @@
+:root {
+    --colorTextos: #49454567;
+}
+
+
+*,
+::before,
+::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto';
+    background-image: url(img/fondo-registro.png);
+    height: 95vh;
+    
+}
+
+.gradient{
+    display: flex;
+    justify-content: center;
+    /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, rgba(219, 142, 98, 0.452), rgba(206, 25, 25, 0.404));
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, rgba(219, 132, 98, 0.486), rgba(206, 25, 25, 0.404));
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    height: 95vh;
+}
+
+nav{
+    background-color: #5e5d5de8;
+    height: 5vh;
+    width: 100%;
+    display: flex;
+}
+
+nav a{
+    text-decoration: none;
+    justify-content: end;
+    color: rgb(233, 233, 233);
+    padding-top: 10px;
+    padding-left: 5px;
+}
+
+.formulario{
+    height: 750px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+h1{
+    text-align: center;
+    font-weight: 700;
+}
+
+form{
+    background: #fff;
+    padding: 40px 0;
+    box-shadow: 0 0 6px 0 rgba(224, 224, 224, 0.8);
+    border-radius: 10px;
+}
+
+.form{
+    width: 100%;
+    margin: auto;
+}
+
+form .grupo{
+    position: relative;
+    margin: 45px ;
+}
+
+.grupo ::placeholder{
+    color:  rgb(202, 202, 202);
+    font-style: italic;
+}
+
+input{
+    background: none;
+    color: #c6c6c6;
+    font-size: 18px;
+    padding: 10px 10px 10px 5px;
+    display: block;
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid var(--colorTextos);
+}
+
+
+input:focus{ 
+    outline: none;
+    color: #5e5d5d;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+input[type=number] { -moz-appearance:textfield; }
+
+label{
+    color: var(--colorTextos);
+    font-size: 16px;
+    position: absolute;
+    left: 5px;
+    top: 10px;
+    transition: 0.5s ease all;
+    pointer-events: none;
+}
+
+input:focus~label,
+input:valid~label{
+    top: -14px;
+    font-size: 12px;
+    color: #a3301c;
+}
+
+.barra{
+    position: relative;
+    display: block;
+    width: 100%;
+}
+
+.barra::before{
+    content: "";
+    height: 2px;
+    width: 0%;
+    bottom: 0;
+    position: absolute;
+    background: linear-gradient(to right, rgb(255, 123, 0), rgb(206, 25, 25));
+    transition: 0.3s ease width;
+    left: 0;
+}
+
+input:focus~.barra::before{
+    width: 100%;
+}
+
+.warnings{
+    width: 200px;
+    text-align: center;
+    margin: auto;
+    color: rgb(206, 25, 25);
+    padding-top: 20px;
+}
+
+button{
+    font-family: 'roboto';
+    background: #dc4545;
+    /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, rgb(219, 142, 98), rgb(206, 25, 25));
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, rgb(219, 132, 98), rgb(206, 25, 25));
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    border: none;
+    display: block;
+    width: 80%;
+    margin: 10px auto;
+    color: #fff;
+    height: 40px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.login{
+    text-align: center;
+    color: #919191;
+}
+
+.login a{
+    margin-left: 10px;
+    color: #dc4545;
+}
+
+@media screen and (max-width:500px){
+    form{
+        width: 80%;
+    }
+}
+
