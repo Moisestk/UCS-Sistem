@@ -1,0 +1,461 @@
+{% extends 'panel/base.html' %}
+{% block title %}Confirmar Eliminación Definitiva | Sistema UCS{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Navegación de regreso -->
+    <div class="mb-6">
+        <a href="{% url 'panel:users_trash_list' %}" 
+           class="inline-flex items-center text-gray-600 hover:text-ucs-red transition-colors duration-200">
+            <i class="fas fa-arrow-left mr-2"></i>
+            <span class="text-sm font-medium">Volver a Papelera</span>
+        </a>
+    </div>
+
+    <!-- Título principal -->
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold text-red-600 flex items-center">
+            <i class="fas fa-exclamation-triangle mr-3"></i>Eliminación Definitiva
+        </h2>
+        <p class="text-gray-600 mt-2">Esta acción es irreversible y eliminará permanentemente el usuario del sistema.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Información del usuario -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-gray-900 font-semibold flex items-center">
+                        <i class="fas fa-user-times mr-2 text-ucs-red"></i>Usuario a Eliminar
+                    </h3>
+                </div>
+
+                <div class="p-6">
+                    <!-- Alerta de peligro -->
+                    <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded-r-lg">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-triangle text-red-400 text-xl"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-red-800">¡Advertencia Crítica!</h3>
+                                <div class="mt-2 text-sm text-red-700">
+                                    <p>Estás a punto de eliminar definitivamente este usuario. Esta acción:</p>
+                                    <ul class="list-disc list-inside mt-2 space-y-1">
+                                        <li>No se puede deshacer</li>
+                                        <li>Eliminará todos los datos asociados</li>
+                                        <li>Requiere confirmación con tu contraseña</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información del usuario -->
+                    <div class="bg-gray-50 rounded-xl p-6 mb-6">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                            <i class="fas fa-user-circle mr-2 text-ucs-red"></i>Datos del Usuario
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="flex items-center p-3 bg-white rounded-lg border">
+                                <i class="fas fa-hashtag text-gray-400 mr-3"></i>
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase tracking-wide">ID</p>
+                                    <p class="font-semibold text-gray-900">#{{ user_obj.id }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center p-3 bg-white rounded-lg border">
+                                <i class="fas fa-user text-gray-400 mr-3"></i>
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase tracking-wide">Usuario</p>
+                                    <p class="font-semibold text-gray-900">{{ user_obj.username }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center p-3 bg-white rounded-lg border">
+                                <i class="fas fa-id-badge text-gray-400 mr-3"></i>
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase tracking-wide">Nombre</p>
+                                    <p class="font-semibold text-gray-900">{{ user_obj.first_name|default:'—' }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center p-3 bg-white rounded-lg border">
+                                <i class="fas fa-envelope text-gray-400 mr-3"></i>
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase tracking-wide">Email</p>
+                                    <p class="font-semibold text-gray-900">{{ user_obj.email|default:'—' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mensajes del sistema -->
+                    {% if messages %}
+                    <div class="mb-6 space-y-3">
+                        {% for message in messages %}
+                            <div class="p-4 rounded-lg border flex items-start
+                                {% if 'error' in message.tags %}bg-red-50 border-red-200 text-red-800
+                                {% else %}bg-blue-50 border-blue-200 text-blue-800{% endif %}">
+                                <i class="{% if 'error' in message.tags %}fas fa-exclamation-circle text-red-500{% else %}fas fa-info-circle text-blue-500{% endif %} mr-3 mt-0.5"></i>
+                                <span>{{ message }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Formulario de confirmación -->
+                    <form method="post" action="{% url 'panel:user_action' user_obj.id %}" class="space-y-6">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="hard_delete" />
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                <i class="fas fa-key mr-2 text-ucs-red"></i>Confirma tu contraseña para proceder
+                            </label>
+                            <div class="relative">
+                                <input type="password" 
+                                       name="password" 
+                                       id="adminConfirmPassword" 
+                                       class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 pr-12 focus:border-red-500 focus:ring-2 focus:ring-red-100 transition-all" 
+                                       placeholder="Ingresa tu contraseña actual"
+                                       required />
+                                <button type="button" 
+                                        id="toggleAdminConfirmPwd" 
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors" 
+                                        aria-label="Mostrar u ocultar contraseña">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-2">
+                                <i class="fas fa-shield-alt mr-1"></i>
+                                Se requiere tu contraseña actual para confirmar esta acción crítica.
+                            </p>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                            <a href="{% url 'panel:users_trash_list' %}" 
+                               class="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition-all duration-200 flex items-center">
+                                <i class="fas fa-times mr-2"></i>Cancelar
+                            </a>
+                            <button type="submit" 
+                                    class="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-lg hover:from-red-700 hover:to-red-800 transition-all duration-200 flex items-center shadow-lg hover:shadow-xl">
+                                <i class="fas fa-trash-alt mr-2"></i>Eliminar Definitivamente
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel lateral con información adicional -->
+        <div class="lg:col-span-1">
+            <div class="space-y-6">
+                <!-- Información de seguridad -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-4 py-3 border-b border-gray-200">
+                        <h4 class="text-gray-900 font-semibold flex items-center text-sm">
+                            <i class="fas fa-shield-alt mr-2 text-ucs-red"></i>Medidas de Seguridad
+                        </h4>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-start">
+                            <i class="fas fa-lock text-orange-500 mr-3 mt-1"></i>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Verificación de Identidad</p>
+                                <p class="text-xs text-gray-600">Se requiere tu contraseña actual</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-history text-orange-500 mr-3 mt-1"></i>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Registro de Auditoría</p>
+                                <p class="text-xs text-gray-600">Esta acción quedará registrada</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-ban text-red-500 mr-3 mt-1"></i>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Acción Irreversible</p>
+                                <p class="text-xs text-gray-600">No se puede deshacer</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Consecuencias -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-4 py-3 border-b border-gray-200">
+                        <h4 class="text-gray-900 font-semibold flex items-center text-sm">
+                            <i class="fas fa-exclamation-triangle mr-2 text-red-500"></i>Consecuencias
+                        </h4>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-start">
+                            <i class="fas fa-user-times text-red-500 mr-3 mt-1"></i>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Cuenta Eliminada</p>
+                                <p class="text-xs text-gray-600">El usuario no podrá acceder nunca más</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-database text-red-500 mr-3 mt-1"></i>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Datos Perdidos</p>
+                                <p class="text-xs text-gray-600">Toda la información se eliminará</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-link text-red-500 mr-3 mt-1"></i>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Referencias Rotas</p>
+                                <p class="text-xs text-gray-600">Proyectos asociados pueden verse afectados</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alternativas -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-4 py-3 border-b border-gray-200">
+                        <h4 class="text-gray-900 font-semibold flex items-center text-sm">
+                            <i class="fas fa-lightbulb mr-2 text-blue-500"></i>¿Consideraste?
+                        </h4>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-start">
+                            <i class="fas fa-undo text-blue-500 mr-3 mt-1"></i>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Restaurar Usuario</p>
+                                <p class="text-xs text-gray-600">Volver a activar la cuenta</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-pause text-blue-500 mr-3 mt-1"></i>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Suspensión Temporal</p>
+                                <p class="text-xs text-gray-600">Desactivar sin eliminar</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Toggle para mostrar/ocultar contraseña
+    (function() {
+        const btn = document.getElementById('toggleAdminConfirmPwd');
+        const input = document.getElementById('adminConfirmPassword');
+        if (!btn || !input) return;
+        
+        btn.addEventListener('click', () => {
+            const eye = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                eye.classList.remove('fa-eye');
+                eye.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                eye.classList.remove('fa-eye-slash');
+                eye.classList.add('fa-eye');
+            }
+        });
+    })();
+
+    // Confirmación adicional antes del envío
+    document.querySelector('form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const password = document.getElementById('adminConfirmPassword').value;
+        if (!password.trim()) {
+            showPasswordModal();
+            return;
+        }
+        
+        showFinalConfirmModal();
+    });
+
+    // Animación de entrada
+    document.addEventListener('DOMContentLoaded', () => {
+        const elements = document.querySelectorAll('.bg-white');
+        elements.forEach((el, index) => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                el.style.transition = 'all 0.6s ease';
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    });
+</script>
+
+<style>
+    /* Efectos especiales para la página de eliminación */
+    .danger-glow:focus {
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+    }
+    
+    /* Animación de pulsación para elementos críticos */
+    @keyframes danger-pulse {
+        0%, 100% { 
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+        }
+        50% { 
+            box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+        }
+    }
+    
+    .danger-button:hover {
+        animation: danger-pulse 1.5s infinite;
+    }
+
+    /* Modal animations */
+    .modal.show {
+        display: flex !important;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    .modal.show > div {
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+        from { transform: scale(0.9) translateY(-20px); opacity: 0; }
+        to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+</style>
+
+<!-- Modal de contraseña requerida -->
+<div id="passwordModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                <i class="fas fa-key mr-2 text-yellow-500"></i>
+                Contraseña Requerida
+            </h3>
+        </div>
+        <div class="p-6">
+            <p class="text-gray-600 mb-4">
+                Debes ingresar tu contraseña para confirmar esta acción crítica.
+            </p>
+            <p class="text-sm text-red-600">
+                <i class="fas fa-exclamation-triangle mr-1"></i>
+                Este campo es obligatorio para proceder.
+            </p>
+        </div>
+        <div class="px-6 py-4 border-t border-gray-200 flex justify-end">
+            <button type="button" 
+                    onclick="hidePasswordModal()" 
+                    class="bg-ucs-red text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                Entendido
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación final -->
+<div id="finalConfirmModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 transform transition-all">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-red-600 flex items-center">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                ⚠️ ÚLTIMA ADVERTENCIA
+            </h3>
+        </div>
+        <div class="p-6">
+            <p class="text-gray-800 font-medium mb-4">
+                Estás a punto de eliminar definitivamente al usuario "<span class="text-ucs-red">{{ user_obj.username }}</span>".
+            </p>
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                <p class="text-red-800 font-medium mb-2">Esta acción es IRREVERSIBLE y eliminará:</p>
+                <ul class="text-red-700 text-sm space-y-1">
+                    <li class="flex items-center"><i class="fas fa-times-circle mr-2"></i>Toda la información del usuario</li>
+                    <li class="flex items-center"><i class="fas fa-times-circle mr-2"></i>Sus proyectos asociados</li>
+                    <li class="flex items-center"><i class="fas fa-times-circle mr-2"></i>Su historial en el sistema</li>
+                </ul>
+            </div>
+            <p class="text-gray-600 text-sm">
+                ¿Estás completamente seguro de continuar?
+            </p>
+        </div>
+        <div class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+            <button type="button" 
+                    onclick="hideFinalConfirmModal()" 
+                    class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
+                Cancelar
+            </button>
+            <button type="button" 
+                    onclick="proceedWithDeletion()" 
+                    class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                Eliminar Definitivamente
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showPasswordModal() {
+        const modal = document.getElementById('passwordModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('show');
+        // Enfocar el campo de contraseña
+        setTimeout(() => {
+            document.getElementById('adminConfirmPassword').focus();
+        }, 300);
+    }
+
+    function hidePasswordModal() {
+        const modal = document.getElementById('passwordModal');
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
+    function showFinalConfirmModal() {
+        const modal = document.getElementById('finalConfirmModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('show');
+    }
+
+    function hideFinalConfirmModal() {
+        const modal = document.getElementById('finalConfirmModal');
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
+    function proceedWithDeletion() {
+        // Enviar el formulario real
+        document.querySelector('form[method="post"]').submit();
+    }
+
+    // Cerrar modales al hacer clic fuera
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                if (this.id === 'passwordModal') {
+                    hidePasswordModal();
+                } else if (this.id === 'finalConfirmModal') {
+                    hideFinalConfirmModal();
+                }
+            }
+        });
+    });
+
+    // Cerrar modales con ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            hidePasswordModal();
+            hideFinalConfirmModal();
+        }
+    });
+</script>
+{% endblock %}

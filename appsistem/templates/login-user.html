@@ -1,0 +1,400 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingresar | Sistema de Registro de Proyectos UCS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ucs-red': '#CE1919',
+                        'ucs-gold': '#F0B97A',
+                        'ucs-black': '#1a1a1a',
+                        'ucs-gray': '#f8f9fa'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --ucs-red: #CE1919;
+            --ucs-gold: #F0B97A;
+            --ucs-dark: #1f2937;
+            --ucs-gray: #f8f9fa;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .captcha-box {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            flex-wrap: nowrap;
+        }
+
+        .captcha-box img {
+            height: 44px;
+            width: auto;
+            display: block;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .captcha-box input[name$="captcha_1"] {
+            height: 44px;
+            line-height: 44px;
+            padding: 0 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            width: 220px;
+            transition: all 0.3s ease;
+        }
+
+        .captcha-box input[name$="captcha_1"]:focus {
+            border-color: var(--ucs-red);
+            box-shadow: 0 0 0 3px rgba(206, 25, 25, 0.1);
+            outline: none;
+        }
+
+        .icon-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e5e7eb;
+            border-radius: 50%;
+            background: white;
+            color: var(--ucs-red);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .icon-btn:hover {
+            background: var(--ucs-red);
+            color: white;
+            transform: rotate(180deg);
+        }
+
+        .icon-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .form-input {
+            transition: all 0.3s ease;
+            border: 2px solid #e5e7eb;
+        }
+
+        .form-input:focus {
+            border-color: var(--ucs-red);
+            box-shadow: 0 0 0 3px rgba(206, 25, 25, 0.1);
+            outline: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--ucs-red) 0%, #b91c1c 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(206, 25, 25, 0.3);
+        }
+
+        .card-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .message-alert {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: var(--ucs-red);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <a href="{% url 'home' %}" class="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+                    <img src="/media/img/logo2.png" alt="UCS Logo"
+                        class="h-12 w-12 rounded-full ring-2 ring-ucs-gold object-cover">
+                    <div class="flex flex-col">
+                        <span class="text-lg font-bold text-ucs-red">Sistema de Registro de Proyectos</span>
+                        <span class="text-sm text-gray-600">Universidad de las Ciencias de la Salud</span>
+                    </div>
+                </a>
+                <a href="/register/" class="text-ucs-red hover:text-red-700 font-medium transition-colors">
+                    <i class="fas fa-user-plus mr-2"></i>Crear cuenta
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-md mx-auto px-4 py-8">
+        <div class="flex items-center justify-center min-h-[500px]">
+            <!-- Formulario de login -->
+            <div class="w-full bg-white rounded-2xl card-shadow overflow-hidden">
+                <!-- Header del formulario -->
+                <div class="bg-gradient-to-r from-ucs-red to-red-700 px-8 py-6 text-white">
+                    <h1 class="text-2xl font-bold mb-2">Iniciar sesión</h1>
+                    <p class="text-red-100">Ingresa tus credenciales para acceder al sistema</p>
+                </div>
+
+                <!-- Mensajes -->
+                {% if messages %}
+                <div class="px-8 pt-6">
+                    {% for message in messages %}
+                    <div class="message-alert mb-4 p-4 rounded-lg border
+                            {% if 'compact' in message.tags %} text-xs {% else %} text-sm {% endif %}
+                            {% if 'blocked' in message.tags %} ring-2 ring-red-300 {% endif %}
+                            {% if 'error' in message.tags %} bg-red-50 border-red-200 text-red-700
+                            {% elif 'success' in message.tags %} bg-green-50 border-green-200 text-green-700
+                            {% elif 'warning' in message.tags %} bg-yellow-50 border-yellow-200 text-yellow-700
+                            {% else %} bg-blue-50 border-blue-200 text-blue-700 {% endif %}">
+                        <div class="flex items-center">
+                            {% if 'error' in message.tags %}
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            {% elif 'success' in message.tags %}
+                            <i class="fas fa-check-circle mr-2"></i>
+                            {% elif 'warning' in message.tags %}
+                            <i class="fas fa-exclamation-circle mr-2"></i>
+                            {% else %}
+                            <i class="fas fa-info-circle mr-2"></i>
+                            {% endif %}
+                            {{ message }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Formulario -->
+                <form method="POST" class="p-8 space-y-6">
+                    {% csrf_token %}
+
+                    <!-- Usuario -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-user mr-2 text-ucs-red"></i>Cedula de Identidad
+                        </label>
+                        <input class="form-input w-full px-4 py-3 rounded-lg" type="text" name="username"
+                            value="{{ form.data.username|default:'' }}" placeholder="Ingresa tu usuario" required />
+                        {% if form.username.errors %}
+                        <div class="mt-2 text-sm text-red-600">
+                            <i class="fas fa-exclamation-circle mr-1"></i>{{ form.username.errors|striptags }}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Contraseña -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-lock mr-2 text-ucs-red"></i>Contraseña
+                        </label>
+                        <div class="relative">
+                            <input class="form-input w-full px-4 py-3 pr-12 rounded-lg" type="password" name="password"
+                                id="loginPassword" placeholder="Ingresa tu contraseña" required />
+                            <button type="button" id="toggleLoginPwd" class="password-toggle"
+                                aria-label="Mostrar u ocultar contraseña">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        {% if form.password.errors %}
+                        <div class="mt-2 text-sm text-red-600">
+                            <i class="fas fa-exclamation-circle mr-1"></i>{{ form.password.errors|striptags }}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Captcha -->
+                    <div class="bg-yellow-50 rounded-xl p-6 border border-yellow-200">
+                        <label class="block text-sm font-semibold text-gray-700 mb-4">
+                            <i class="fas fa-shield-alt mr-2 text-ucs-red"></i>Verificación de seguridad
+                        </label>
+                        <div class="captcha-box p-3 bg-white border border-gray-300 rounded-lg shadow-sm inline-block">
+                            {{ form.captcha }}
+                            <button type="button" id="captchaRefreshLoginIcon" class="icon-btn" title="Recargar captcha"
+                                aria-label="Recargar captcha">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 12a9 9 0 1 0 3-6.708" />
+                                    <path d="M3 4v6h6" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="mt-3 text-sm text-gray-600">
+                            <i class="fas fa-lightbulb mr-2 text-yellow-500"></i>
+                            Escribe los caracteres tal como aparecen en la imagen.
+                        </div>
+                        {% if form.captcha.errors %}
+                        <div class="mt-3 text-sm text-red-600 font-medium">
+                            <i class="fas fa-exclamation-circle mr-1"></i>{{ form.captcha.errors|striptags }}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="space-y-4">
+                        <button type="submit"
+                            class="btn-primary w-full py-3 text-white rounded-lg font-semibold text-lg">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Iniciar sesión
+                        </button>
+                        <div class="text-center">
+                            <a href="/register/" class="text-ucs-red hover:text-red-700 font-medium transition-colors">
+                                <i class="fas fa-user-plus mr-2"></i>¿No tienes cuenta? Regístrate aquí
+                            </a>
+                        </div>
+                        <div class="text-center mt-2">
+                            <a href="{% url 'password_reset' %}"
+                                class="text-ucs-red hover:text-red-700 font-medium transition-colors">
+                                ¿Olvidaste tu contraseña?
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 border-t border-gray-200 mt-12">
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <div class="flex items-center justify-center space-x-3">
+                <img src="/media/img/logo2.png" alt="UCS Logo"
+                    class="h-8 w-8 rounded-full ring-1 ring-ucs-gold object-cover">
+                <span class="text-gray-600 text-sm">© 2024 Universidad de las Ciencias de la Salud "Hugo Chávez
+                    Frías"</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+            // Ver/ocultar contraseña
+            (function () {
+                const btn = document.getElementById('toggleLoginPwd');
+                const input = document.getElementById('loginPassword');
+                if (btn && input) {
+                    btn.addEventListener('click', () => {
+                        const eye = btn.querySelector('i');
+                        if (input.type === 'password') {
+                            input.type = 'text';
+                            eye.classList.remove('fa-eye');
+                            eye.classList.add('fa-eye-slash');
+                        } else {
+                            input.type = 'password';
+                            eye.classList.remove('fa-eye-slash');
+                            eye.classList.add('fa-eye');
+                        }
+                    });
+                }
+            })();
+
+        // Refrescar captcha en login
+        const refreshLoginIcon = document.getElementById('captchaRefreshLoginIcon');
+        if (refreshLoginIcon) {
+            refreshLoginIcon.addEventListener('click', async () => {
+                try {
+                    const res = await fetch('/captcha/refresh/', { cache: 'no-store' });
+                    const data = await res.json();
+
+                    const box = document.querySelector('.captcha-box');
+                    if (!box) return;
+
+                    const img = box.querySelector('img');
+                    const hidden = box.querySelector('input[name$="captcha_0"]');
+                    const text = box.querySelector('input[name$="captcha_1"]');
+
+                    if (img && hidden) {
+                        img.src = data.image_url;
+                        hidden.value = data.key;
+                        if (text) text.value = '';
+                    }
+                } catch (err) {
+                    console.error('Error refrescando captcha:', err);
+                }
+            });
+        }
+
+        // Animaciones de entrada
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = document.querySelectorAll('.form-input, .btn-primary');
+            elements.forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    el.style.transition = 'all 0.6s ease';
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+
+        // Efecto de focus mejorado
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', function () {
+                this.parentElement.classList.add('transform', 'scale-105');
+            });
+
+            input.addEventListener('blur', function () {
+                this.parentElement.classList.remove('transform', 'scale-105');
+            });
+        });
+
+        // Validación en tiempo real
+        document.querySelectorAll('input[required]').forEach(input => {
+            input.addEventListener('blur', function () {
+                if (this.value.trim() === '') {
+                    this.classList.add('border-red-300');
+                    this.classList.remove('border-green-300');
+                } else {
+                    this.classList.add('border-green-300');
+                    this.classList.remove('border-red-300');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

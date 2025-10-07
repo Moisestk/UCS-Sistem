@@ -1,0 +1,593 @@
+{% extends 'panel/base.html' %}
+{% block title %}Dashboard | Panel{% endblock %}
+{% block content %}
+    <div class="mb-4 sm:mb-6 lg:mb-8">
+        <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">Dashboard Estadístico</h2>
+        <p class="text-xs sm:text-sm lg:text-base text-gray-600 mt-1">Resumen completo del sistema de proyectos UCS</p>
+    </div>
+
+<!-- Estadísticas Principales -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 hover:shadow-md transition-all">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="w-10 h-10 bg-ucs-blue bg-opacity-10 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-folder text-ucs-blue text-lg"></i>
+                </div>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm font-medium text-gray-600">Total Proyectos</p>
+                <p class="text-2xl font-bold text-gray-900">{{ total }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 hover:shadow-md transition-all">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="w-10 h-10 bg-ucs-green bg-opacity-10 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-check-circle text-ucs-green text-lg"></i>
+                </div>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm font-medium text-gray-600">Aprobados</p>
+                <p class="text-2xl font-bold text-gray-900">{{ aprobados }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 hover:shadow-md transition-all">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-times-circle text-red-600 text-lg"></i>
+                </div>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm font-medium text-gray-600">Rechazados</p>
+                <p class="text-2xl font-bold text-gray-900">{{ rechazados }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 hover:shadow-md transition-all">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="w-10 h-10 bg-ucs-yellow bg-opacity-10 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-clock text-ucs-yellow text-lg"></i>
+                </div>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm font-medium text-gray-600">Sin Aprobar</p>
+                <p class="text-2xl font-bold text-gray-900">{{ proyectos_sin_aprobar }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Gráficos Visuales -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Gráfico de Estados de Proyectos -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            <i class="fas fa-chart-pie text-ucs-blue mr-2"></i>
+            Estados de Proyectos
+        </h3>
+        <div class="relative h-80">
+            <canvas id="estadosChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Gráfico de Proyectos por PNF -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            <i class="fas fa-chart-bar text-ucs-green mr-2"></i>
+            Proyectos por PNF
+        </h3>
+        <div class="relative h-80">
+            <canvas id="pnfChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Gráficos de Momentos y Usuarios -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Gráfico de Momentos -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            <i class="fas fa-tasks text-ucs-red mr-2"></i>
+            Estados de Momentos
+        </h3>
+        <div class="relative h-80">
+            <canvas id="momentosChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Gráfico de Usuarios por PNF -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            <i class="fas fa-users text-ucs-yellow mr-2"></i>
+            Usuarios por PNF
+        </h3>
+        <div class="relative h-80">
+            <canvas id="usuariosChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Estadísticas de Momentos -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Resumen de Momentos -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            <i class="fas fa-tasks text-ucs-red mr-2"></i>
+            Estadísticas de Momentos
+        </h3>
+        <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="text-center p-4 bg-green-50 rounded-lg">
+                    <div class="text-2xl font-bold text-green-600">{{ momentos_corregidos }}</div>
+                    <div class="text-sm text-gray-600">Corregidos</div>
+                </div>
+                <div class="text-center p-4 bg-yellow-50 rounded-lg">
+                    <div class="text-2xl font-bold text-yellow-600">{{ momentos_con_correcciones }}</div>
+                    <div class="text-sm text-gray-600">Con Correcciones</div>
+                </div>
+                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <div class="text-2xl font-bold text-gray-600">{{ momentos_pendientes }}</div>
+                    <div class="text-sm text-gray-600">Pendientes</div>
+                </div>
+                <div class="text-center p-4 bg-blue-50 rounded-lg">
+                    <div class="text-2xl font-bold text-blue-600">{{ total_momentos }}</div>
+                    <div class="text-sm text-gray-600">Total Momentos</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Distribución de Estados -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            <i class="fas fa-chart-pie text-ucs-yellow mr-2"></i>
+            Estados de Proyectos
+        </h3>
+        <div class="space-y-3">
+            {% for estado in estados_proyectos %}
+            <div class="flex items-center justify-between py-2">
+                <span class="text-sm font-medium text-gray-600">
+                    {% if estado.estado == 'APROBADO' %}
+                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                    {% elif estado.estado == 'RECHAZADO' %}
+                        <i class="fas fa-times-circle text-red-500 mr-2"></i>
+                    {% elif estado.estado == 'PENDIENTE' %}
+                        <i class="fas fa-clock text-yellow-500 mr-2"></i>
+                    {% elif estado.estado == 'EN_REVISION' %}
+                        <i class="fas fa-eye text-blue-500 mr-2"></i>
+                    {% endif %}
+                    {{ estado.estado|default:"Sin estado" }}
+                </span>
+                <div class="flex items-center space-x-2">
+                    <div class="w-20 bg-gray-200 rounded-full h-2">
+                        {% if total > 0 %}
+                            {% widthratio estado.cantidad total 100 as percentage %}
+                            <div class="bg-ucs-blue h-2 rounded-full" style="width: {{ percentage }}%"></div>
+                        {% endif %}
+                    </div>
+                    <span class="text-sm font-bold text-gray-900">{{ estado.cantidad }}</span>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-8 text-gray-500">
+                <i class="fas fa-chart-pie text-4xl mb-4 opacity-50"></i>
+                <p>No hay datos de estados disponibles</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Actividad Reciente y Acciones Rápidas -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Actividad Reciente -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            <i class="fas fa-clock text-ucs-blue mr-2"></i>
+            Actividad Reciente
+        </h3>
+        {% if recent_projects %}
+        <div class="space-y-3">
+            {% for project in recent_projects %}
+            <div class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-all">
+                <div class="flex items-center space-x-3">
+                    <div class="w-2 h-2 bg-ucs-blue rounded-full"></div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">{{ project.titulo|truncatechars:40 }}</p>
+                        <p class="text-xs text-gray-500">{{ project.pnf.nombre_pnf }} • {{ project.fecha_subido|timesince }} ago</p>
+                    </div>
+                </div>
+                <span class="px-2 py-1 text-xs font-medium rounded-full 
+                    {% if project.estado == 'APROBADO' %}bg-green-100 text-green-800
+                    {% elif project.estado == 'RECHAZADO' %}bg-red-100 text-red-800
+                    {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                    {{ project.estado|default:"Pendiente" }}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8 text-gray-500">
+            <i class="fas fa-folder-open text-4xl mb-4 opacity-50"></i>
+            <p>No hay proyectos recientes</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Acciones Rápidas -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            <i class="fas fa-bolt text-ucs-green mr-2"></i>
+            Acciones Rápidas
+        </h3>
+        <div class="space-y-3">
+            <a href="{% url 'panel:projects_list' %}" class="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-ucs-blue hover:bg-blue-50 transition-all group">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-eye text-gray-400 group-hover:text-ucs-blue"></i>
+                    <span class="text-sm font-medium text-gray-700 group-hover:text-ucs-blue">Ver todos los proyectos</span>
+                </div>
+                <i class="fas fa-arrow-right text-gray-400 group-hover:text-ucs-blue"></i>
+            </a>
+
+            <a href="{% url 'panel:projects_list' %}?estado=PENDIENTE" class="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-ucs-yellow hover:bg-yellow-50 transition-all group">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-clock text-gray-400 group-hover:text-ucs-yellow"></i>
+                    <span class="text-sm font-medium text-gray-700 group-hover:text-ucs-yellow">Proyectos pendientes</span>
+                </div>
+                <i class="fas fa-arrow-right text-gray-400 group-hover:text-ucs-yellow"></i>
+            </a>
+
+            {% if request.user.is_staff %}
+            <a href="{% url 'panel:users_list' %}" class="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-ucs-green hover:bg-green-50 transition-all group">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-users text-gray-400 group-hover:text-ucs-green"></i>
+                    <span class="text-sm font-medium text-gray-700 group-hover:text-ucs-green">Gestionar usuarios</span>
+                </div>
+                <i class="fas fa-arrow-right text-gray-400 group-hover:text-ucs-green"></i>
+            </a>
+            {% endif %}
+
+            <a href="{% url 'panel:notifications_list' %}" class="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-ucs-red hover:bg-red-50 transition-all group">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-bell text-gray-400 group-hover:text-ucs-red"></i>
+                    <span class="text-sm font-medium text-gray-700 group-hover:text-ucs-red">Ver notificaciones</span>
+                </div>
+                <i class="fas fa-arrow-right text-gray-400 group-hover:text-ucs-red"></i>
+            </a>
+
+            <button class="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-purple-500 hover:bg-purple-50 transition-all group">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-download text-gray-400 group-hover:text-purple-500"></i>
+                    <span class="text-sm font-medium text-gray-700 group-hover:text-purple-500">Generar reporte</span>
+                </div>
+                <i class="fas fa-arrow-right text-gray-400 group-hover:text-purple-500"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript para Gráficos -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Colores UCS
+    const ucsColors = {
+        red: '#DC2626',
+        blue: '#1E40AF', 
+        green: '#059669',
+        yellow: '#FCD34D',
+        purple: '#7C3AED',
+        orange: '#EA580C',
+        teal: '#0D9488',
+        pink: '#DB2777'
+    };
+
+    // Datos desde Django
+    const estadosData = {
+        labels: [
+            {% for estado in estados_proyectos %}
+            '{{ estado.estado|default:"Sin estado" }}'{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        data: [
+            {% for estado in estados_proyectos %}
+            {{ estado.cantidad }}{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ]
+    };
+
+    const pnfData = {
+        labels: [
+            {% for stat in pnf_stats %}
+            '{{ stat.pnf__nombre_pnf|truncatechars:15 }}'{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        data: [
+            {% for stat in pnf_stats %}
+            {{ stat.total_proyectos }}{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        aprobados: [
+            {% for stat in pnf_stats %}
+            {{ stat.aprobados }}{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        rechazados: [
+            {% for stat in pnf_stats %}
+            {{ stat.rechazados }}{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        pendientes: [
+            {% for stat in pnf_stats %}
+            {{ stat.pendientes }}{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ]
+    };
+
+    const usuariosData = {
+        labels: [
+            {% for user_stat in usuarios_por_pnf %}
+            '{{ user_stat.proyecto__pnf__nombre_pnf|truncatechars:20 }}'{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        data: [
+            {% for user_stat in usuarios_por_pnf %}
+            {{ user_stat.usuarios_count }}{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ]
+    };
+
+    // 1. Gráfico de Estados de Proyectos (Pie Chart)
+    try {
+        const estadosCtx = document.getElementById('estadosChart');
+        if (estadosCtx) {
+            // Verificar si hay datos
+            if (estadosData.data.length === 0 || estadosData.data.every(val => val === 0)) {
+                estadosCtx.parentElement.innerHTML = `
+                    <div class="flex items-center justify-center h-80 text-gray-500">
+                        <div class="text-center">
+                            <i class="fas fa-chart-pie text-4xl mb-4 opacity-50"></i>
+                            <p>No hay datos de estados disponibles</p>
+        </div>
+    </div>
+                `;
+            } else {
+                new Chart(estadosCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: estadosData.labels,
+                        datasets: [{
+                            data: estadosData.data,
+                            backgroundColor: [
+                                ucsColors.green,
+                                ucsColors.red, 
+                                ucsColors.yellow,
+                                ucsColors.blue,
+                                ucsColors.purple,
+                                ucsColors.orange
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    usePointStyle: true
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
+                                        return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Error creando gráfico de estados:', error);
+    }
+
+    // 2. Gráfico de Proyectos por PNF (Bar Chart)
+    try {
+        const pnfCtx = document.getElementById('pnfChart');
+        if (pnfCtx) {
+            if (pnfData.data.length === 0 || pnfData.data.every(val => val === 0)) {
+                pnfCtx.parentElement.innerHTML = `
+                    <div class="flex items-center justify-center h-80 text-gray-500">
+                        <div class="text-center">
+                            <i class="fas fa-chart-bar text-4xl mb-4 opacity-50"></i>
+                            <p>No hay datos de PNF disponibles</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                new Chart(pnfCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: pnfData.labels,
+                        datasets: [{
+                            label: 'Total Proyectos',
+                            data: pnfData.data,
+                            backgroundColor: ucsColors.blue,
+                            borderColor: ucsColors.blue,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    afterLabel: function(context) {
+                                        const index = context.dataIndex;
+                                        return [
+                                            'Aprobados: ' + pnfData.aprobados[index],
+                                            'Rechazados: ' + pnfData.rechazados[index],
+                                            'Pendientes: ' + pnfData.pendientes[index]
+                                        ];
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    maxRotation: 45,
+                                    minRotation: 45
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Error creando gráfico de PNF:', error);
+    }
+
+    // 3. Gráfico de Estados de Momentos (Doughnut Chart)
+    try {
+        const momentosCtx = document.getElementById('momentosChart');
+        if (momentosCtx) {
+            const momentosTotal = {{ momentos_corregidos }} + {{ momentos_con_correcciones }} + {{ momentos_pendientes }};
+            if (momentosTotal === 0) {
+                momentosCtx.parentElement.innerHTML = `
+                    <div class="flex items-center justify-center h-80 text-gray-500">
+                        <div class="text-center">
+                            <i class="fas fa-tasks text-4xl mb-4 opacity-50"></i>
+                            <p>No hay datos de momentos disponibles</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                new Chart(momentosCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Corregidos', 'Con Correcciones', 'Pendientes'],
+                        datasets: [{
+                            data: [{{ momentos_corregidos }}, {{ momentos_con_correcciones }}, {{ momentos_pendientes }}],
+                            backgroundColor: [
+                                ucsColors.green,
+                                ucsColors.yellow,
+                                ucsColors.red
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    usePointStyle: true
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
+                                        return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Error creando gráfico de momentos:', error);
+    }
+
+    // 4. Gráfico de Usuarios por PNF (Horizontal Bar Chart)
+    try {
+        const usuariosCtx = document.getElementById('usuariosChart');
+        if (usuariosCtx) {
+            if (usuariosData.data.length === 0 || usuariosData.data.every(val => val === 0)) {
+                usuariosCtx.parentElement.innerHTML = `
+                    <div class="flex items-center justify-center h-80 text-gray-500">
+                        <div class="text-center">
+                            <i class="fas fa-users text-4xl mb-4 opacity-50"></i>
+                            <p>No hay datos de usuarios disponibles</p>
+    </div>
+</div>
+                `;
+            } else {
+                new Chart(usuariosCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: usuariosData.labels,
+                        datasets: [{
+                            label: 'Usuarios',
+                            data: usuariosData.data,
+                            backgroundColor: ucsColors.teal,
+                            borderColor: ucsColors.teal,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    maxRotation: 0
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Error creando gráfico de usuarios:', error);
+    }
+});
+</script>
+{% endblock %}

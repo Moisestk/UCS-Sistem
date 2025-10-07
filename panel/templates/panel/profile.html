@@ -1,0 +1,212 @@
+{% extends 'panel/base.html' %}
+{% block title %}Perfil | Panel{% endblock %}
+{% block content %}
+<div class="mb-6 sm:mb-8">
+    <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Mi Perfil</h2>
+    <p class="text-sm sm:text-base text-gray-600 mt-1">Actualiza tu información personal y configuración</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+    <!-- Profile Information -->
+    <div class="lg:col-span-2">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+            <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
+                <i class="fas fa-user-edit text-ucs-blue mr-2"></i>
+                Información Personal
+            </h3>
+            <form method="post" class="space-y-3 sm:space-y-4">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_info" />
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Nombre</label>
+                        <input type="text" name="first_name" value="{{ user_obj.first_name }}" 
+                               class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ucs-blue focus:border-ucs-blue transition-all"
+                               placeholder="Tu nombre completo">
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Correo Electrónico</label>
+                        <input type="email" name="email" value="{{ user_obj.email }}" 
+                               class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ucs-blue focus:border-ucs-blue transition-all"
+                               placeholder="tu@email.com">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Usuario</label>
+                    <input type="text" value="{{ user_obj.username }}" 
+                           class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-gray-50 text-gray-500" 
+                           disabled
+                           placeholder="Nombre de usuario (no editable)">
+                    <p class="text-xs text-gray-500 mt-1">El nombre de usuario no se puede modificar</p>
+                </div>
+                
+                <div class="pt-3 sm:pt-4">
+                    <button type="submit" class="bg-ucs-blue text-white px-4 sm:px-6 py-2 rounded-lg hover:bg-blue-700 transition-all flex items-center text-sm sm:text-base">
+                        <i class="fas fa-save mr-2"></i>
+                        Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Profile Picture -->
+    <div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                <i class="fas fa-camera text-ucs-green mr-2"></i>
+                Foto de Perfil
+            </h3>
+            
+            <div class="text-center mb-6">
+                {% with photo=user_obj.profile.photo %}
+                    {% if photo %}
+                        <img src="{{ photo.url }}" alt="Foto de perfil" 
+                             class="mx-auto h-24 w-24 rounded-full object-cover border-4 border-gray-200">
+                    {% else %}
+                        <div class="mx-auto h-24 w-24 rounded-full bg-gradient-to-br from-ucs-red to-red-600 flex items-center justify-center text-white text-2xl font-bold">
+                            {{ user_obj.first_name|first|default:user_obj.username|first|upper }}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+            
+            <form method="post" enctype="multipart/form-data" class="space-y-4">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_photo" />
+                
+                <div>
+                    <input type="file" name="photo" accept="image/*" 
+                           class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-ucs-blue file:text-white hover:file:bg-blue-700" 
+                           required />
+                </div>
+                
+                <div class="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    <strong>Formatos:</strong> JPG, PNG<br>
+                    <strong>Tamaño recomendado:</strong> 256x256px
+                </div>
+                
+                <button type="submit" class="w-full bg-ucs-green text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all flex items-center justify-center">
+                    <i class="fas fa-upload mr-2"></i>
+                    Actualizar Foto
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Section -->
+<div class="mt-6">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            <i class="fas fa-lock text-ucs-red mr-2"></i>
+            Cambiar Contraseña
+        </h3>
+        
+        <form method="post" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="change_password" />
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Contraseña Actual</label>
+                <input type="password" name="current_password" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-ucs-red focus:border-ucs-red transition-all" 
+                       placeholder="Tu contraseña actual"
+                       required />
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Nueva Contraseña</label>
+                <input type="password" name="new_password1" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-ucs-red focus:border-ucs-red transition-all" 
+                       placeholder="Nueva contraseña"
+                       required />
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Confirmar Nueva Contraseña</label>
+                <input type="password" name="new_password2" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-ucs-red focus:border-ucs-red transition-all" 
+                       placeholder="Confirma la nueva contraseña"
+                       required />
+            </div>
+            
+            <div class="md:col-span-3 pt-4">
+                <button type="submit" class="bg-ucs-red text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-all flex items-center">
+                    <i class="fas fa-key mr-2"></i>
+                    Cambiar Contraseña
+                </button>
+            </div>
+        </form>
+        
+        <!-- Password Requirements -->
+        <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <h4 class="text-sm font-medium text-yellow-800 mb-2">
+                <i class="fas fa-shield-alt mr-2"></i>
+                Requisitos de Contraseña:
+            </h4>
+            <ul class="text-xs text-yellow-700 space-y-1">
+                <li>• Mínimo 8 caracteres</li>
+                <li>• Al menos una letra mayúscula</li>
+                <li>• Al menos una letra minúscula</li>
+                <li>• Al menos un número</li>
+                <li>• Al menos un carácter especial</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Account Information -->
+<div class="mt-6">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            <i class="fas fa-info-circle text-ucs-yellow mr-2"></i>
+            Información de la Cuenta
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-3">
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                    <span class="text-sm font-medium text-gray-600">Usuario:</span>
+                    <span class="text-sm text-gray-900">{{ user_obj.username }}</span>
+                </div>
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                    <span class="text-sm font-medium text-gray-600">Email:</span>
+                    <span class="text-sm text-gray-900">{{ user_obj.email|default:"No configurado" }}</span>
+                </div>
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                    <span class="text-sm font-medium text-gray-600">Estado:</span>
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {% if user_obj.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                        {% if user_obj.is_active %}
+                            <i class="fas fa-check-circle mr-1"></i>Activo
+                        {% else %}
+                            <i class="fas fa-times-circle mr-1"></i>Inactivo
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="space-y-3">
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                    <span class="text-sm font-medium text-gray-600">Fecha de registro:</span>
+                    <span class="text-sm text-gray-900">{{ user_obj.date_joined|date:"d M Y" }}</span>
+                </div>
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                    <span class="text-sm font-medium text-gray-600">Último acceso:</span>
+                    <span class="text-sm text-gray-900">{{ user_obj.last_login|date:"d M Y H:i"|default:"Nunca" }}</span>
+                </div>
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                    <span class="text-sm font-medium text-gray-600">Rol:</span>
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        <i class="fas fa-user-shield mr-1"></i>
+                        {% if user_obj.is_superuser %}Administrador{% else %}Usuario{% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

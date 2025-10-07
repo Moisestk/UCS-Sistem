@@ -1,0 +1,52 @@
+{% extends 'auth/base_public.html' %}
+{% block title %}Definir nueva contraseña | Sistema UCS{% endblock %}
+{% block content %}
+<div class="mb-6">
+  <h2 class="text-3xl font-bold text-ucs-red flex items-center">
+    <i class="fas fa-lock mr-3"></i>Define tu nueva contraseña
+  </h2>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 max-w-xl">
+  <form method="post" class="space-y-5">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">
+        <i class="fas fa-key mr-1 text-ucs-red"></i>Nueva contraseña
+      </label>
+      {{ form.new_password1 }}
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">
+        <i class="fas fa-key mr-1 text-ucs-red"></i>Repetir contraseña
+      </label>
+      {{ form.new_password2 }}
+    </div>
+
+    <div class="flex justify-end">
+      <button type="submit" class="bg-ucs-red hover:bg-red-700 text-white px-6 py-3 rounded-xl transition-all shadow-md flex items-center">
+        <i class="fas fa-save mr-2"></i>Guardar
+      </button>
+    </div>
+  </form>
+</div>
+
+<style>
+/* Estilo básico de inputs renderizados por Django */
+input[type="password"] {
+  width: 100%;
+  border: 2px solid #e5e7eb;
+  border-radius: .5rem;
+  padding: .75rem 1rem;
+  transition: all .2s;
+}
+input[type="password"]:focus {
+  border-color: #CE1919;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(206,25,25,.12);
+}
+</style>
+{% endblock %}

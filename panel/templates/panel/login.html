@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acceso Administrador | UCS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    /* Mejoras para móviles */
+    @media (max-width: 640px) {
+      body {
+        padding: 1rem;
+      }
+      input[type="text"], input[type="password"] {
+        font-size: 16px !important; /* Previene zoom en iOS */
+      }
+    }
+    
+    /* Animaciones suaves */
+    .transition-all {
+      transition: all 0.3s ease;
+    }
+    
+    /* Mejoras de accesibilidad */
+    button:focus, input:focus {
+      outline: 2px solid #DC2626;
+      outline-offset: 2px;
+    }
+    
+    /* Hover effects mejorados */
+    button:hover {
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50 flex items-center justify-center p-3 sm:p-4">
+  <div class="w-full max-w-md bg-white shadow-xl rounded-2xl border border-gray-200 p-4 sm:p-6 lg:p-8">
+    <div class="flex items-center mb-4 sm:mb-6">
+      <img class="h-8 sm:h-10 w-auto mr-2 sm:mr-3 flex-shrink-0" src="https://upload.wikimedia.org/wikipedia/commons/7/74/Logo_de_la_Universidad_Ciencias_de_la_Salud.png" alt="UCS" onerror="this.style.display='none'">
+      <h1 class="text-lg sm:text-xl font-bold text-gray-900">Acceso al Panel</h1>
+    </div>
+    <p class="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-6">Solo personal administrativo</p>
+
+    {% if messages %}
+      <div class="space-y-2 mb-4">
+        {% for message in messages %}
+          {% if 'error' in message.tags %}
+            <div class="px-4 py-3 rounded-lg border border-red-300 bg-red-50 text-red-800">{{ message }}</div>
+          {% elif 'success' in message.tags %}
+            <div class="px-4 py-3 rounded-lg border border-green-300 bg-green-50 text-green-800">{{ message }}</div>
+          {% else %}
+            <div class="px-4 py-3 rounded-lg border border-blue-300 bg-blue-50 text-blue-800">{{ message }}</div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="mb-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded p-2">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <label class="block text-sm font-medium text-gray-700 mb-2">Usuario</label>
+      <input
+        type="text"
+        name="{{ form.username.name }}"
+        value="{{ form.username.value|default:'' }}"
+        class="w-full border-2 border-gray-200 rounded-lg px-3 py-3 h-12 mb-4 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-300 text-base transition-all"
+        required
+        autofocus
+        placeholder="Ingresa tu usuario"
+      >
+
+      <label class="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
+      <div class="relative mb-6">
+        <input
+          type="password"
+          name="{{ form.password.name }}"
+          id="panelPassword"
+          class="w-full border-2 border-gray-200 rounded-lg px-3 py-3 h-12 pr-12 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-300 text-base transition-all"
+          required
+          placeholder="Ingresa tu contraseña"
+        >
+        <button type="button" id="togglePanelPwd" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 p-2 hover:text-gray-700 transition-colors" aria-label="Mostrar u ocultar contraseña">
+          <i class="fas fa-eye text-lg"></i>
+        </button>
+      </div>
+
+      <button class="w-full px-6 py-3 h-12 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-200 focus:ring-offset-2 text-base font-medium transition-all shadow-md hover:shadow-lg">
+        <i class="fas fa-sign-in-alt mr-2"></i>
+        Entrar al Panel
+      </button>
+    </form>
+
+    <div class="mt-6 text-center">
+      <a href="/" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-700 hover:bg-gray-50 rounded-lg transition-all">
+        <i class="fas fa-arrow-left mr-2"></i>
+        Volver al sitio
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // Mejoras de UX móvil
+    document.addEventListener('DOMContentLoaded', function() {
+      // Prevenir zoom en inputs en iOS
+      const inputs = document.querySelectorAll('input[type="text"], input[type="password"]');
+      inputs.forEach(input => {
+        input.style.fontSize = '16px';
+      });
+      
+      // Toggle de contraseña mejorado
+      const btn = document.getElementById('togglePanelPwd');
+      const input = document.getElementById('panelPassword');
+      
+      if (btn && input) {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const eye = btn.querySelector('i');
+          if (input.type === 'password') {
+            input.type = 'text';
+            eye.classList.replace('fa-eye', 'fa-eye-slash');
+            btn.setAttribute('aria-label', 'Ocultar contraseña');
+          } else {
+            input.type = 'password';
+            eye.classList.replace('fa-eye-slash', 'fa-eye');
+            btn.setAttribute('aria-label', 'Mostrar contraseña');
+          }
+        });
+        
+        // Mejorar accesibilidad del botón
+        btn.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          btn.click();
+        });
+      }
+      
+      // Auto-focus en el primer campo
+      const firstInput = document.querySelector('input[type="text"]');
+      if (firstInput) {
+        firstInput.focus();
+      }
+      
+      // Mejorar experiencia de teclado
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          const form = document.querySelector('form');
+          if (form) {
+            form.submit();
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

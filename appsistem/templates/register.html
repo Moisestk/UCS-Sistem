@@ -1,0 +1,414 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear cuenta | Sistema de Registro de Proyectos UCS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ucs-red': '#CE1919',
+                        'ucs-gold': '#F0B97A',
+                        'ucs-black': '#1a1a1a',
+                        'ucs-gray': '#f8f9fa'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root { --ucs-red:#CE1919; --ucs-gold:#F0B97A; --ucs-dark:#1f2937; --ucs-gray:#f8f9fa; }
+        body { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); }
+        .captcha-box { position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:8px; flex-wrap:nowrap; }
+        .captcha-box img { height:44px; width:auto; display:block; image-rendering:auto; filter:none; border-radius:6px; border:1px solid #e5e7eb; }
+        .captcha-box input[name$="captcha_1"] { height:44px; line-height:44px; padding:0 12px; border:1px solid #d1d5db; border-radius:8px; width:220px; transition:all .3s ease; }
+        .captcha-box input[name$="captcha_1"]:focus { border-color: var(--ucs-red); box-shadow:0 0 0 3px rgba(206,25,25,.1); outline:none; }
+        .icon-btn { position:absolute; top:6px; right:6px; width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; border:1px solid #e5e7eb; border-radius:50%; background:white; color:var(--ucs-red); transition:all .3s ease; cursor:pointer; }
+        .icon-btn:hover { background:var(--ucs-red); color:white; transform:rotate(180deg); }
+        .icon-btn svg { width:16px; height:16px; }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+        .shake { animation: shake .5s ease-in-out 2; }
+        .form-input { transition:all .3s ease; border:2px solid #e5e7eb; }
+        .form-input:focus { border-color: var(--ucs-red); box-shadow:0 0 0 3px rgba(206,25,25,.1); outline:none; }
+        .btn-primary { background:linear-gradient(135deg, var(--ucs-red) 0%, #b91c1c 100%); transition:all .3s ease; }
+        .btn-primary:hover { transform:translateY(-2px); box-shadow:0 10px 25px rgba(206,25,25,.3); }
+        .card-shadow { box-shadow:0 20px 25px -5px rgba(0,0,0,.1), 0 10px 10px -5px rgba(0,0,0,.04); }
+        .step-indicator { background:linear-gradient(135deg, var(--ucs-red) 0%, #b91c1c 100%); }
+        .avatar-preview { transition:all .3s ease; }
+        .avatar-preview:hover { transform:scale(1.05); }
+    </style>
+</head>
+<body class="min-h-screen">
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <a href="{% url 'home' %}" class="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/74/Logo_de_la_Universidad_Ciencias_de_la_Salud.png" alt="UCS Logo" class="h-12 w-auto">
+                    <div class="flex flex-col">
+                        <span class="text-lg font-bold text-ucs-red">Sistema de Registro de Proyectos</span>
+                        <span class="text-sm text-gray-600">Universidad de las Ciencias de la Salud</span>
+                    </div>
+                </a>
+                <a href="/login/" class="text-ucs-red hover:text-red-700 font-medium transition-colors">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Ingresar
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-2xl card-shadow overflow-hidden">
+            <div class="bg-gradient-to-r from-ucs-red to-red-700 px-8 py-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold mb-2">Crear cuenta</h1>
+                        <p class="text-red-100">Registro en dos pasos. Completa toda la información requerida.</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        {% if step == '2' %}
+                            <div class="step-indicator w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold bg-white text-ucs-red">1</div>
+                            <div class="w-8 h-0.5 bg-white"></div>
+                            <div class="step-indicator w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">2</div>
+                        {% else %}
+                            <div class="step-indicator w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">1</div>
+                            <div class="w-8 h-0.5 bg-red-300"></div>
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold bg-red-300 text-red-600">2</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {% if step == '2' %}
+            <form method="POST" enctype="multipart/form-data" class="p-8">
+                {% csrf_token %}
+                <input type="hidden" name="step" value="2" />
+
+                {% if form2.non_field_errors %}
+                    <div class="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>{{ form2.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-user mr-2 text-ucs-red"></i>Cedula de Identidad (Usuario) 
+                        </label>
+                        <input
+                            class="form-input w-full px-4 py-3 rounded-lg"
+                            type="text"
+                            name="username"
+                            value="{{ form2.username.value|default:'' }}"
+                            placeholder="Ingresa tu cédula (7 u 8 dígitos)"
+                            required
+                            pattern="^\d{7,8}$"
+                            minlength="7"
+                            maxlength="8"
+                            inputmode="numeric"
+                            title="Solo números, 7 u 8 dígitos"
+                        />
+                        {% if form2.username.errors %}
+                            <div class="mt-2 text-sm text-red-600">
+                                <i class="fas fa-exclamation-circle mr-1"></i>{{ form2.username.errors|striptags }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="bg-gray-50 rounded-xl p-6">
+                        <label class="block text-sm font-semibold text-gray-700 mb-4">
+                            <i class="fas fa-camera mr-2 text-ucs-red"></i>Foto de perfil (opcional)
+                        </label>
+                        <div class="flex items-center space-x-6">
+                            <div class="avatar-preview w-24 h-24 rounded-full border-4 border-ucs-gold bg-gray-100 overflow-hidden shadow-lg">
+                                <img id="avatarPreview" class="w-full h-full object-cover" src="{% static 'img/user.png' %}" alt="Preview" />
+                            </div>
+                            <div class="flex-1">
+                                <input class="form-input w-full px-4 py-3 rounded-lg" type="file" name="photo" accept="image/*" id="avatarInput" />
+                                {% if form2.photo and form2.photo.errors %}
+                                    <div class="mt-2 text-sm text-red-600">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>{{ form2.photo.errors|striptags }}
+                                    </div>
+                                {% endif %}
+                                <p class="text-xs text-gray-500 mt-2">
+                                    <i class="fas fa-info-circle mr-1"></i>Formatos soportados: JPG, PNG. Tamaño recomendado: 256x256px
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4">
+                        <a href="/register/" class="text-gray-600 hover:text-ucs-red font-medium transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>Volver al paso 1
+                        </a>
+                        <button type="submit" class="btn-primary px-8 py-3 text-white rounded-lg font-semibold">
+                            <i class="fas fa-user-plus mr-2"></i>Crear cuenta
+                        </button>
+                    </div>
+                </div>
+            </form>
+            {% else %}
+            <form method="POST" class="p-8">
+                {% csrf_token %}
+                <input type="hidden" name="step" value="1" />
+
+                {% if form1 and form1.non_field_errors %}
+                    <div class="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>{{ form1.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-user mr-2 text-ucs-red"></i>Nombre
+                            </label>
+                            <input class="form-input w-full px-4 py-3 rounded-lg" type="text" name="first_name" value="{{ form1.first_name.value|default:'' }}" placeholder="Tu nombre" required />
+                            {% if form1.first_name.errors %}
+                                <div class="mt-2 text-sm text-red-600">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>{{ form1.first_name.errors|striptags }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-user mr-2 text-ucs-red"></i>Apellido
+                            </label>
+                            <input class="form-input w-full px-4 py-3 rounded-lg" type="text" name="last_name" value="{{ form1.last_name.value|default:'' }}" placeholder="Tu apellido" required />
+                            {% if form1.last_name.errors %}
+                                <div class="mt-2 text-sm text-red-600">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>{{ form1.last_name.errors|striptags }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-envelope mr-2 text-ucs-red"></i>Correo electrónico
+                        </label>
+                        <input class="form-input w-full px-4 py-3 rounded-lg" type="email" name="email" value="{{ form1.email.value|default:'' }}" placeholder="tu@email.com" required />
+                        {% if form1.email.errors %}
+                            <div class="mt-2 text-sm text-red-600">
+                                <i class="fas fa-exclamation-circle mr-1"></i>{{ form1.email.errors|striptags }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-lock mr-2 text-ucs-red"></i>Contraseña
+                            </label>
+                            <div class="relative">
+                                <input class="form-input w-full px-4 py-3 rounded-lg pr-12" type="password" name="password1" id="regPassword1" placeholder="Mínimo 8 caracteres" required />
+                                <button type="button" id="toggleRegPwd1" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" aria-label="Mostrar u ocultar contraseña">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-lock mr-2 text-ucs-red"></i>Confirmar contraseña
+                            </label>
+                            <div class="relative">
+                                <input class="form-input w-full px-4 py-3 rounded-lg pr-12" type="password" name="password2" id="regPassword2" placeholder="Repite tu contraseña" required />
+                                <button type="button" id="toggleRegPwd2" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" aria-label="Mostrar u ocultar contraseña">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
+                        <i class="fas fa-info-circle mr-2 text-blue-500"></i>
+                        La contraseña debe tener mínimo 8 caracteres e incluir mayúsculas, minúsculas y números.
+                    </div>
+
+                    <div class="bg-yellow-50 rounded-xl p-6 border border-yellow-200">
+                        <label class="block text-sm font-semibold text-gray-700 mb-4">
+                            <i class="fas fa-shield-alt mr-2 text-ucs-red"></i>Verificación de seguridad
+                        </label>
+                        <div class="flex items-start gap-4">
+                            <div id="captchaBoxReg" class="captcha-box p-3 bg-white border border-gray-300 rounded-lg shadow-sm {% if form1.captcha.errors %} shake {% endif %}">
+                                {{ form1.captcha }}
+                                <button type="button" id="captchaRefreshIcon" class="icon-btn" title="Recargar captcha" aria-label="Recargar captcha">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 12a9 9 0 1 0 3-6.708" />
+                                        <path d="M3 4v6h6" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="text-sm text-gray-600 flex-1">
+                                <i class="fas fa-lightbulb mr-2 text-yellow-500"></i>
+                                Escribe los caracteres tal como aparecen en la imagen para verificar que eres humano.
+                            </div>
+                        </div>
+                        {% if form1.captcha.errors %}
+                            <div class="mt-3 text-sm text-red-600">
+                                <i class="fas fa-exclamatio n-circle mr-1"></i>{{ form1.captcha.errors|striptags }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4">
+                        <a href="/login/" class="text-gray-600 hover:text-ucs-red font-medium transition-colors">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Ya tengo una cuenta
+                        </a>
+                        <button type="submit" class="btn-primary px-8 py-3 text-white rounded-lg font-semibold">
+                            <i class="fas fa-arrow-right mr-2"></i>Continuar
+                        </button>
+                    </div>
+                </div>
+            </form>
+            {% endif %}
+        </div>
+    </main>
+
+    <footer class="bg-gray-100 border-t border-gray-200 mt-12">
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <div class="flex items-center justify-center space-x-3">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/7/74/Logo_de_la_Universidad_Ciencias_de_la_Salud.png" alt="UCS Logo" class="h-8 w-auto">
+                <span class="text-gray-600 text-sm">© 2024 Universidad de las Ciencias de la Salud "Hugo Chávez Frías"</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Previsualización de avatar
+        (function () {
+            const fileInput = document.getElementById('avatarInput');
+            const defaultSrc = "{% static 'img/user.png' %}";
+            let img = document.getElementById('avatarPreview');
+            let circle = null;
+            if (!img) {
+                const candidates = document.querySelectorAll('*');
+                for (const el of candidates) {
+                    const txt = (el.textContent || '').trim().toLowerCase();
+                    if (txt === 'preview') { circle = el; break; }
+                }
+                if (circle) {
+                    circle.style.backgroundImage = `url("${defaultSrc}")`;
+                    circle.style.backgroundSize = 'cover';
+                    circle.style.backgroundPosition = 'center';
+                    circle.style.backgroundRepeat = 'no-repeat';
+                    circle.style.color = 'transparent';
+                }
+            } else {
+                if (!img.getAttribute('src')) img.setAttribute('src', defaultSrc);
+            }
+
+            if (!fileInput) return;
+
+            fileInput.addEventListener('change', () => {
+                const file = fileInput.files && fileInput.files[0];
+                if (!file) {
+                    if (img) {
+                        img.src = defaultSrc;
+                        img.parentElement?.classList.remove('ring-4', 'ring-ucs-red');
+                    } else if (circle) {
+                        circle.style.backgroundImage = `url("${defaultSrc}")`;
+                        circle.style.color = 'transparent';
+                    }
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const src = e.target.result;
+                    if (img) {
+                        img.src = src;
+                        img.parentElement?.classList.add('ring-4', 'ring-ucs-red');
+                    } else if (circle) {
+                        circle.style.backgroundImage = `url("${src}")`;
+                        circle.style.color = 'transparent';
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        })();
+
+        // Refrescar captcha
+        const refreshIcon = document.getElementById('captchaRefreshIcon');
+        if (refreshIcon) {
+            refreshIcon.addEventListener('click', async () => {
+                try {
+                    const res = await fetch('/captcha/refresh/', { cache: 'no-store' });
+                    const data = await res.json();
+
+                    const box = document.getElementById('captchaBoxReg');
+                    if (!box) return;
+
+                    const img = box.querySelector('img');
+                    const hidden = box.querySelector('input[name$="captcha_0"]');
+                    const text = box.querySelector('input[name$="captcha_1"]');
+
+                    if (img && hidden) {
+                        img.src = data.image_url;
+                        hidden.value = data.key;
+                        if (text) text.value = '';
+                    }
+                } catch (err) {
+                    console.error('Error refrescando captcha:', err);
+                }
+            });
+        }
+
+        // Validación mínima captcha (UX)
+        const regForm = document.querySelector('form[method="POST"] input[name="step"][value="1"]')?.form;
+        if (regForm) {
+            regForm.addEventListener('submit', (e) => {
+                const captchaInput = document.querySelector('input[name$="captcha_1"]');
+                if (captchaInput && !captchaInput.value.trim()) {
+                    e.preventDefault();
+                    const box = document.getElementById('captchaBoxReg');
+                    if (box) {
+                        box.classList.remove('shake');
+                        void box.offsetWidth;
+                        box.classList.add('shake');
+                    }
+                    captchaInput.focus();
+                }
+            });
+        }
+
+        // Ver/ocultar contraseñas
+        (function() {
+            function attachToggle(btnId, inputId) {
+                const btn = document.getElementById(btnId);
+                const input = document.getElementById(inputId);
+                if (!btn || !input) return;
+                btn.addEventListener('click', () => {
+                    const eye = btn.querySelector('i');
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        eye.classList.remove('fa-eye'); eye.classList.add('fa-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        eye.classList.remove('fa-eye-slash'); eye.classList.add('fa-eye');
+                    }
+                });
+            }
+            attachToggle('toggleRegPwd1', 'regPassword1');
+            attachToggle('toggleRegPwd2', 'regPassword2');
+        })();
+
+        // Animación simple de entrada
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = document.querySelectorAll('.form-input, .btn-primary');
+            elements.forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    el.style.transition = 'all 0.6s ease';
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
