@@ -10,10 +10,8 @@ DEBUG = True
 # Secret key (use env var in prod)
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'dev-secret-key-change-me-please-1234567890')
 
-ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost',
-]
+ALLOWED_HOSTS ['sistemaucsproyecto.pythonanywhere.com', '127.0.0.1']
+
 INSTALLED_APPS = [
     'jazzmin',
     'appsistem.apps.AppsistemConfig',
