@@ -1,0 +1,187 @@
+{% extends 'panel/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="mb-4 sm:mb-6 lg:mb-8">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
+                <i class="fas fa-graduation-cap text-ucs-blue mr-2"></i>
+                {{ title }}
+            </h2>
+            <p class="text-xs sm:text-sm lg:text-base text-gray-600 mt-1">
+                {% if pnf %}
+                    Edita la información del PNF
+                {% else %}
+                    Completa la información para crear un nuevo PNF
+                {% endif %}
+            </p>
+        </div>
+        <div class="mt-4 sm:mt-0">
+            <a href="{% url 'panel:pnfs_list' %}" class="inline-flex items-center px-4 py-2 bg-gray-500 text-white text-sm font-medium rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Volver a la Lista
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Formulario -->
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900">
+                <i class="fas fa-info-circle text-ucs-blue mr-2"></i>
+                Información del PNF
+            </h3>
+        </div>
+        
+        <div class="p-6">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                <!-- Errores generales del formulario -->
+                {% if form.non_field_errors %}
+                    <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-triangle text-red-400"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-red-700">{{ form.non_field_errors }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="space-y-6">
+                    <div>
+                        <label for="{{ form.nombre_pnf.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-tag mr-1"></i>
+                            Nombre del PNF <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.nombre_pnf }}
+                        {% if form.nombre_pnf.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.nombre_pnf.errors.0 }}</p>
+                        {% endif %}
+                        <p class="mt-2 text-sm text-gray-500">
+                            Ingresa el nombre completo del Programa Nacional de Formación
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Información adicional si es edición -->
+                {% if pnf %}
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h4 class="text-sm font-medium text-gray-900 mb-3">
+                            <i class="fas fa-info-circle text-ucs-blue mr-2"></i>
+                            Información del PNF
+                        </h4>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">ID:</span>
+                                <span class="text-sm font-medium text-gray-900">#{{ pnf.id }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">Proyectos asociados:</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    {{ pnf.proyecto_set.count }} proyecto{{ pnf.proyecto_set.count|pluralize }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h4 class="text-sm font-medium text-gray-900 mb-3">
+                            <i class="fas fa-chart-bar text-ucs-green mr-2"></i>
+                            Estadísticas
+                        </h4>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">Estado:</span>
+                                {% if pnf.proyecto_set.count > 0 %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <i class="fas fa-check-circle mr-1"></i>
+                                        Activo
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        <i class="fas fa-pause-circle mr-1"></i>
+                                        Sin proyectos
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Botones de acción -->
+                <div class="mt-8 flex flex-col sm:flex-row sm:justify-between gap-4">
+                    <a href="{% url 'panel:pnfs_list' %}" class="inline-flex items-center justify-center px-4 py-2 bg-gray-500 text-white text-sm font-medium rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all">
+                        <i class="fas fa-times mr-2"></i>
+                        Cancelar
+                    </a>
+                    <button type="submit" class="inline-flex items-center justify-center px-4 py-2 bg-ucs-blue text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all">
+                        <i class="fas fa-save mr-2"></i>
+                        {{ action }} PNF
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Validación del formulario
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const nombreInput = document.querySelector('#{{ form.nombre_pnf.id_for_label }}');
+    
+    // Agregar clases de Tailwind para el input
+    nombreInput.classList.add('w-full', 'px-3', 'py-2', 'border', 'border-gray-300', 'rounded-lg', 'focus:ring-2', 'focus:ring-ucs-blue', 'focus:border-ucs-blue', 'transition-all');
+    
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        // Validar nombre del PNF
+        if (nombreInput.value.trim() === '') {
+            nombreInput.classList.add('border-red-500', 'focus:ring-red-500', 'focus:border-red-500');
+            nombreInput.classList.remove('border-gray-300', 'focus:ring-ucs-blue', 'focus:border-ucs-blue');
+            isValid = false;
+        } else {
+            nombreInput.classList.remove('border-red-500', 'focus:ring-red-500', 'focus:border-red-500');
+            nombreInput.classList.add('border-gray-300', 'focus:ring-ucs-blue', 'focus:border-ucs-blue');
+        }
+        
+        if (!isValid) {
+            e.preventDefault();
+            // Mostrar mensaje de error
+            if (!document.querySelector('.error-message')) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'error-message mb-4 p-4 bg-red-50 border border-red-200 rounded-lg';
+                alertDiv.innerHTML = '<div class="flex"><div class="flex-shrink-0"><i class="fas fa-exclamation-triangle text-red-400"></i></div><div class="ml-3"><p class="text-sm text-red-700">Por favor, corrige los errores en el formulario.</p></div></div>';
+                form.insertBefore(alertDiv, form.firstChild);
+            }
+        }
+    });
+    
+    // Limpiar validación al escribir
+    nombreInput.addEventListener('input', function() {
+        if (this.value.trim() !== '') {
+            this.classList.remove('border-red-500', 'focus:ring-red-500', 'focus:border-red-500');
+            this.classList.add('border-gray-300', 'focus:ring-ucs-blue', 'focus:border-ucs-blue');
+            
+            // Remover mensaje de error si existe
+            const errorMessage = document.querySelector('.error-message');
+            if (errorMessage) {
+                errorMessage.remove();
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

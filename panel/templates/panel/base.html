@@ -1,0 +1,329 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Panel Admin{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'img/mini.ico' %}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    tailwind.config = { theme: { extend: { colors: {
+      'ucs-red':'#DC2626','ucs-blue':'#1E40AF','ucs-green':'#059669','ucs-yellow':'#FCD34D','ucs-black':'#000000','ucs-white':'#FFFFFF'
+    }}}};
+    </script>
+    <style>
+    ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#f1f1f1}
+    ::-webkit-scrollbar-thumb{background:#DC2626;border-radius:3px}
+    ::-webkit-scrollbar-thumb:hover{background:#B91C1C}
+    .transition-all{transition:all .3s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .animate-fade-in{animation:fadeIn .5s ease-out}
+    .sidebar-collapsed{width:4rem}.sidebar-expanded{width:16rem}
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 fixed w-full top-0 z-50">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo and Title -->
+        <div class="flex items-center min-w-0 flex-1">
+          <!-- Mobile Menu Button -->
+          <div class="relative lg:hidden">
+            <button id="mobile-menu-toggle" class="mr-2 sm:mr-4 p-2 rounded-md text-gray-600 hover:text-ucs-red hover:bg-gray-100 transition-all">
+              <i class="fas fa-bars text-lg"></i>
+            </button>
+            <!-- Mobile Dropdown Menu -->
+            <div id="mobile-menu" class="hidden absolute left-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+              <nav class="py-2">
+                <a href="{% url 'panel:dashboard' %}" class="flex items-center space-x-3 px-4 py-3 text-sm font-medium {% if request.resolver_match.url_name == 'dashboard' %}bg-ucs-red text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition-all">
+                  <i class="fas fa-tachometer-alt w-5"></i>
+                  <span>Dashboard</span>
+                </a>
+                <a href="{% url 'panel:projects_list' %}" class="flex items-center space-x-3 px-4 py-3 text-sm font-medium {% if request.resolver_match.url_name == 'projects_list' %}bg-ucs-red text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition-all">
+                  <i class="fas fa-folder-open w-5"></i>
+                  <span>Proyectos</span>
+                </a>
+                <a href="{% url 'panel:users_list' %}" class="flex items-center space-x-3 px-4 py-3 text-sm font-medium {% if request.resolver_match.url_name == 'users_list' %}bg-ucs-red text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition-all">
+                  <i class="fas fa-users w-5"></i>
+                  <span>Usuarios</span>
+                </a>
+                <a href="{% url 'panel:pnfs_list' %}" class="flex items-center space-x-3 px-4 py-3 text-sm font-medium {% if request.resolver_match.url_name == 'pnfs_list' %}bg-ucs-red text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition-all">
+                  <i class="fas fa-graduation-cap w-5"></i>
+                  <span>PNFs</span>
+                </a>
+                <a href="{% url 'panel:notifications_list' %}" class="flex items-center space-x-3 px-4 py-3 text-sm font-medium {% if request.resolver_match.url_name == 'notifications_list' %}bg-ucs-red text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition-all">
+                  <i class="fas fa-bell w-5"></i>
+                  <span>Notificaciones</span>
+                </a>
+                <a href="{% url 'panel:profile' %}" class="flex items-center space-x-3 px-4 py-3 text-sm font-medium {% if request.resolver_match.url_name == 'profile' %}bg-ucs-red text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition-all">
+                  <i class="fas fa-user-cog w-5"></i>
+                  <span>Mi Perfil</span>
+                </a>
+              </nav>
+            </div>
+          </div>
+          
+          <!-- Desktop Sidebar Toggle -->
+          <button id="sidebar-toggle" class="hidden lg:block mr-2 sm:mr-4 p-2 rounded-md text-gray-600 hover:text-ucs-red hover:bg-gray-100 transition-all">
+                        <i class="fas fa-bars text-lg"></i>
+                    </button>
+          
+          <img class="h-6 sm:h-8 w-auto mr-2 sm:mr-3 flex-shrink-0" src="https://upload.wikimedia.org/wikipedia/commons/7/74/Logo_de_la_Universidad_Ciencias_de_la_Salud.png" alt="UCS Logo">
+          <h1 class="text-lg sm:text-xl font-bold text-gray-900 truncate">Panel de Administración</h1>
+                </div>
+
+                <!-- User Menu -->
+        <div class="flex items-center space-x-2 sm:space-x-4">
+                    <!-- Notifications -->
+                    <div class="relative">
+                        <button id="notifications-btn" class="p-2 rounded-full text-gray-600 hover:text-ucs-red hover:bg-gray-100 transition-all relative">
+                            <i class="fas fa-bell text-lg"></i>
+                            {% if notif_unread_count and notif_unread_count > 0 %}
+                            <span class="absolute -top-1 -right-1 bg-ucs-red text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">{{ notif_unread_count }}</span>
+                            {% endif %}
+                        </button>
+                        <!-- Notifications Dropdown -->
+            <div id="notifications-dropdown" class="hidden absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                            <div class="p-4 border-b border-gray-200">
+                                <h3 class="text-lg font-semibold text-gray-900">Notificaciones</h3>
+                            </div>
+                            <div class="max-h-64 overflow-y-auto">
+                                {% if notif_recent %}
+                                    {% for n in notif_recent %}
+                                    <div class="p-3 hover:bg-gray-50 border-b border-gray-100">
+                                        {% if n.id %}
+                                        <a href="{% url 'panel:notification_open' n.id %}" class="block">
+                                            <p class="text-sm text-gray-800 {% if not n.is_read %}font-semibold{% endif %}">{{ n.preview }}</p>
+                                            <p class="text-xs text-gray-500 mt-1">{{ n.created_at|date:'d M Y H:i' }}</p>
+                                        </a>
+                                        {% else %}
+                                        <p class="text-sm text-gray-800 {% if not n.is_read %}font-semibold{% endif %}">{{ n.preview }}</p>
+                                        <p class="text-xs text-gray-500 mt-1">{{ n.created_at|date:'d M Y H:i' }}</p>
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="p-6 text-center text-sm text-gray-500">Sin notificaciones</div>
+                                {% endif %}
+                            </div>
+                            <div class="p-3 text-right border-t border-gray-200">
+                                <a href="{% url 'panel:notifications_list' %}" class="text-sm text-ucs-blue hover:underline">Ver todas</a>
+                            </div>
+                        </div>
+                    </div>
+
+          <!-- User Menu -->
+                    <div class="relative">
+            <button id="user-menu-btn" class="flex items-center space-x-1 sm:space-x-2 p-2 rounded-md hover:bg-gray-100 transition-all">
+              <img class="h-6 w-6 sm:h-8 sm:w-8 rounded-full object-cover flex-shrink-0"
+                                 src="{% if request.user.profile.photo %}{{ request.user.profile.photo.url }}{% else %}{% static 'img/user.png' %}{% endif %}"
+                                 alt="Usuario">
+              <span class="text-xs sm:text-sm font-medium text-gray-700 hidden sm:block">
+                              {% if request.user.is_staff %}Administrador{% else %}Estudiante{% endif %}
+                            </span>
+              <i class="fas fa-chevron-down text-xs text-gray-500 hidden sm:block"></i>
+                        </button>
+                        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                            <a href="{% url 'panel:profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Mi Perfil</a>
+                            <hr class="border-gray-200">
+                            <form action="{% url 'panel:logout' %}" method="post" class="block">
+                                {% csrf_token %}
+                                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-ucs-red hover:bg-gray-50">Salir</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+  <!-- Desktop Sidebar (hidden on mobile/tablet) -->
+  <aside id="sidebar" class="hidden lg:block fixed left-0 top-16 h-full bg-white shadow-lg border-r border-gray-200 sidebar-expanded transition-all z-40">
+        <nav class="p-4 space-y-2">
+            <a href="{% url 'panel:dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active bg-ucs-red text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-all">
+                <i class="fas fa-tachometer-alt w-5"></i>
+                <span class="nav-text">Dashboard</span>
+            </a>
+            <a href="{% url 'panel:projects_list' %}" class="nav-item {% if request.resolver_match.url_name == 'projects_list' %}active bg-ucs-red text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-all">
+                <i class="fas fa-folder-open w-5"></i>
+                <span class="nav-text">Proyectos</span>
+            </a>
+            <a href="{% url 'panel:users_list' %}" class="nav-item {% if request.resolver_match.url_name == 'users_list' %}active bg-ucs-red text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-all">
+                <i class="fas fa-users w-5"></i>
+                <span class="nav-text">Usuarios</span>
+            </a>
+            <a href="{% url 'panel:pnfs_list' %}" class="nav-item {% if request.resolver_match.url_name == 'pnfs_list' %}active bg-ucs-red text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-all">
+                <i class="fas fa-graduation-cap w-5"></i>
+                <span class="nav-text">PNFs</span>
+            </a>
+            <a href="{% url 'panel:notifications_list' %}" class="nav-item {% if request.resolver_match.url_name == 'notifications_list' %}active bg-ucs-red text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-all">
+                <i class="fas fa-bell w-5"></i>
+                <span class="nav-text">Notificaciones</span>
+            </a>
+            <a href="{% url 'panel:profile' %}" class="nav-item {% if request.resolver_match.url_name == 'profile' %}active bg-ucs-red text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-all">
+                <i class="fas fa-user-cog w-5"></i>
+                <span class="nav-text">Mi Perfil</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+  <main id="main-content" class="lg:ml-64 mt-16 p-4 sm:p-6 transition-all">
+        {% if messages %}
+        <div class="mb-6 space-y-2">
+            {% for message in messages %}
+            <div class="px-4 py-3 rounded-lg border {% if message.tags == 'success' %}border-green-300 bg-green-50 text-green-800{% elif message.tags == 'error' %}border-red-300 bg-red-50 text-red-800{% elif message.tags == 'warning' %}border-yellow-300 bg-yellow-50 text-yellow-800{% else %}border-blue-300 bg-blue-50 text-blue-800{% endif %}">
+                <div class="flex items-center">
+                    {% if message.tags == 'success' %}
+                    <i class="fas fa-check-circle mr-2"></i>
+                    {% elif message.tags == 'error' %}
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    {% elif message.tags == 'warning' %}
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    {% else %}
+                    <i class="fas fa-info-circle mr-2"></i>
+                    {% endif %}
+                    {{ message }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Page Content -->
+        <div class="animate-fade-in">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <script>
+    // Mejoras de UX móvil
+    // Prevenir zoom en inputs en iOS
+    document.addEventListener('DOMContentLoaded', function() {
+      const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"], input[type="number"]');
+      inputs.forEach(input => {
+        if (input.style.fontSize !== '16px') {
+          input.style.fontSize = '16px';
+        }
+      });
+    });
+
+    // Mobile Menu Toggle
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    if (mobileMenuToggle && mobileMenu) {
+      mobileMenuToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        mobileMenu.classList.toggle('hidden');
+      });
+    }
+
+    // Cerrar menú móvil al hacer clic fuera
+    document.addEventListener('click', function(e) {
+      if (mobileMenu && !mobileMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+        mobileMenu.classList.add('hidden');
+      }
+    });
+
+    // Auto-responsivo para sidebar (solo desktop)
+        function setSidebarByWidth() {
+          const sidebar = document.getElementById('sidebar');
+          const mainContent = document.getElementById('main-content');
+          if (!sidebar || !mainContent) return;
+      const isDesktop = window.innerWidth >= 1024; // >= lg
+
+      if (isDesktop) {
+        // En desktop, sidebar expandido por defecto
+        sidebar.classList.remove('sidebar-collapsed');
+        sidebar.classList.add('sidebar-expanded');
+        mainContent.classList.remove('ml-0');
+        mainContent.classList.add('ml-64');
+        document.querySelectorAll('.nav-text').forEach(t => t.style.display = 'block');
+      } else {
+        // En móviles y tablets, sidebar oculto
+            sidebar.classList.add('sidebar-collapsed');
+            sidebar.classList.remove('sidebar-expanded');
+            mainContent.classList.remove('ml-64');
+        mainContent.classList.add('ml-0');
+            document.querySelectorAll('.nav-text').forEach(t => t.style.display = 'none');
+          }
+        }
+        window.addEventListener('load', setSidebarByWidth);
+        window.addEventListener('resize', setSidebarByWidth);
+
+    // Toggle del sidebar (solo desktop)
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const mainContent = document.getElementById('main-content');
+      
+      if (sidebar.classList.contains('sidebar-collapsed')) {
+        sidebar.classList.remove('sidebar-collapsed');
+        sidebar.classList.add('sidebar-expanded');
+        mainContent.classList.remove('ml-0');
+        mainContent.classList.add('ml-64');
+        document.querySelectorAll('.nav-text').forEach(t => t.style.display = 'block');
+      } else {
+        sidebar.classList.add('sidebar-collapsed');
+        sidebar.classList.remove('sidebar-expanded');
+        mainContent.classList.remove('ml-64');
+        mainContent.classList.add('ml-0');
+        document.querySelectorAll('.nav-text').forEach(t => t.style.display = 'none');
+      }
+    }
+    
+    if (sidebarToggle) {
+      sidebarToggle.addEventListener('click', toggleSidebar);
+    }
+
+        // Toggle de notificaciones y menú de usuario
+        const notifBtn = document.getElementById('notifications-btn');
+        const notifDropdown = document.getElementById('notifications-dropdown');
+        const userBtn = document.getElementById('user-menu-btn');
+        const userDropdown = document.getElementById('user-dropdown');
+
+        function hideAllDropdowns() {
+          if (notifDropdown) notifDropdown.classList.add('hidden');
+          if (userDropdown) userDropdown.classList.add('hidden');
+        }
+
+        if (notifBtn && notifDropdown) {
+          notifBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (userDropdown) userDropdown.classList.add('hidden');
+            notifDropdown.classList.toggle('hidden');
+          });
+        }
+
+        if (userBtn && userDropdown) {
+          userBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (notifDropdown) notifDropdown.classList.add('hidden');
+            userDropdown.classList.toggle('hidden');
+          });
+        }
+
+        // Cerrar al hacer clic fuera
+        document.addEventListener('click', (e) => {
+          const insideNotif = notifDropdown && notifDropdown.contains(e.target);
+          const insideUser = userDropdown && userDropdown.contains(e.target);
+          const isNotifBtn = notifBtn && notifBtn.contains(e.target);
+          const isUserBtn = userBtn && userBtn.contains(e.target);
+          if (!insideNotif && !isNotifBtn && !insideUser && !isUserBtn) {
+            hideAllDropdowns();
+          }
+        });
+
+        // Cerrar con ESC
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') hideAllDropdowns();
+        });
+    </script>
+</body>
+</html>

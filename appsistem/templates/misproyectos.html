@@ -1,154 +1,177 @@
+{% extends 'index.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <title>Mis Proyectos | UCS</title>
-    <link href=" {% static 'css\system-styles.css' %}" rel="stylesheet" />
-    <link rel="icon"  href="{% static "img/mini.ico" %}" />
-    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-  </head>
-  <body>
-    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-      <!-- Navbar Brand -->
-      <h3 class="navbar-brand ps-3">S.R.P</h3>
-      <!-- Sidebar Toggle -->
-      <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
-      <!-- Navbar Search -->
-      <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-        <div class="input-group"></div>
-      </form>
-      <!-- Navbar -->
-      <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-            <li>
-              <a class="dropdown-item" href="/cerrar">Salir</a>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </nav>
-    <div id="layoutSidenav">
-      <div id="layoutSidenav_nav">
-        <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
-          <div class="sb-sidenav-menu">
-            <div class="nav">
-              <div class="sb-sidenav-menu-heading"  style="text-align: center;">
-                <img src="/media/img/logo2.png" style="width: 150px; margin: auto; display: flex; justify-items: center; margin-bottom: 3rem;" />
-                <h5>{{user.first_name}}</h5>
-              </div>
-              <a class="nav-link" href="/inicio">
-                <div class="sb-nav-link-icon">
-                  <i class="fas fa-house"></i>
-                </div>Home
-              </a>
-              <a class="nav-link" href="/subir">
-                <div class="sb-nav-link-icon">
-                  <i class="fas fa-list"></i>
-                </div>Registro
-              </a>
-              <a class="nav-link" href="/misproyectos">
-                <div class="sb-nav-link-icon">
-                  <i class="fas fa-table"></i>
-                </div>Mis Proyectos
-              </a>
-            </div>
-          </div>
-        </nav>
-      </div>
-      <div id="layoutSidenav_content">
-        <main>
-          <div class="container-fluid px-4">
-            <h1 class="mt-4">Tu Lista De Proyectos</h1>
-            <ol class="breadcrumb mb-4">
-              <li class="breadcrumb-item">S.R.P</li>
-              <li class="breadcrumb-item active">
-                <a href="/misproyectos">Mis Proyectos</a>
-              </li>
-            </ol>
-            <div class="card mb-4">
-              <div class="card-body">
-                <h3 style="text-align: center; margin-top: 2rem; margin-bottom: 2.5rem;">Proyectos Guardados</h3>
-                <div class="card mb-4">
-                  <div class="datatable-wrapper datatable-loading no-footer sortable searchable fixed-columns">
-                    <div class="datatable-container">
-                      <table id="datatablesSimple" class="datatable-table justify-content: center; text-align: center;">
-                        <thead>
-                            <tr>
-                                <th data-sortable="true" style="width: 9.554655870445345%;"
-                                    aria-sort="descending" class="datatable-descending"><a href="#"
-                                        class="datatable-sorter">Título de Proyecto</a></th>
-                                <th data-sortable="true" style="width: 11.65991902834008%;"><a href="#"
-                                        class="datatable-sorter">Autores</a></th>
-                                <th data-sortable="true" style="width: 11.65991902834008%;"><a href="#"
-                                            class="datatable-sorter">Seccion</a></th>
-                                <th data-sortable="true" style="width: 36.59919028340081%;"><a href="#"
-                                        class="datatable-sorter">Descripción</a></th>
-                                <th data-sortable="true" style="width: 13.279352226720647%;"><a href="#"
-                                        class="datatable-sorter">Cedula</a></th>
-                                <th data-sortable="true" style="width: 6.801619433198381%;"><a href="#"
-                                        class="datatable-sorter">Tutor</a></th>
-                                <th data-sortable="true" style="width: 7.125506072874494%;"><a href="#"
-                                        class="datatable-sorter">Fecha</a></th>
-                                <th data-sortable="true" style="width: 7.773279352226721%;"><a href="#"
-                                        class="datatable-sorter">Carrera</a></th>
-                                <th data-sortable="true" style="width: 7.206477732793521%;"><a href="#"
-                                        class="datatable-sorter">Trayecto</a>
-                                </th>
-                                <th data-sortable="true" style="width: 7.206477732793521%;"><a href="#"
-                                  class="datatable-sorter"> Status </a>
-                          </th>
-                            </tr>
-                        </thead>
-                        <tbody style="text-align: center;">
-                            {% for user in Proyectos %}    
-                            <tr data-index="0">
-                                <td>{{user.titulo}}</td>
-                                <td>{{user.autores}}</td>
-                                <td>{{user.seccion}}</td>
-                                <td>{{user.descripcion}}</td>
-                                <td>{{user.cedula}}</td>
-                                <td>{{user.tutor}}</td>
-                                <td>{{user.fecha_subido}}</td>
-                                <td>{{user.pnf}}</td>
-                                <td>{{user.trayecto}}</td>
+{% block title %}Mis Proyectos | SRP{% endblock %}
+{% block breadcrumb %}<span class="text-ucs-red font-medium">Mis Proyectos</span>{% endblock %}
 
-                              {% if user.revisado %}
-                              <td style="color:green;"><span class="badge bg-success"><strong>Aprobado</strong> </span></td>
-                              {% else %}
-                              <td style="color:darkblue;"><span class="badge bg-primary"><strong>Revision</strong></span></td>
-                              {% endif %}
-                                <td><a href="{% url 'editarproyectos' user.id %} " style="text-decoration: none;color: whit">EDITAR</a></td>
-                                {% endfor %}
-                            </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
+{% block content %}
+<!-- Welcome Section -->
+<div class="mb-8">
+    <div class="bg-gradient-to-r from-ucs-red to-red-700 rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden">
+        <div class="relative z-10">
+            <h2 class="text-2xl sm:text-3xl font-bold mb-2">Mis Proyectos</h2>
+            <p class="text-red-100 mb-4">Gestiona y da seguimiento a todos tus proyectos académicos</p>
+            <div class="flex flex-wrap gap-4">
+                <a href="{% url 'subir' %}" class="bg-white text-ucs-red px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center">
+                    <i class="fas fa-plus mr-2"></i>Nuevo Proyecto
+                </a>
             </div>
-          </div>
-        </main>
-        <footer class="py-4 bg-light mt-auto">
-          <div class="container-fluid px-4">
-            <div class="d-flex align-items-center justify-content-between small">
-              <div class="text-muted">
-                Creative Commons Version 4.0
-              </div>
-            </div>
-          </div>
-        </footer>
-      </div>
+        </div>
+        <!-- Decorative elements -->
+        <div class="absolute top-0 right-0 -mt-4 -mr-4 w-16 sm:w-24 h-16 sm:h-24 bg-white bg-opacity-10 rounded-full"></div>
+        <div class="absolute bottom-0 right-4 sm:right-8 -mb-4 sm:-mb-8 w-20 sm:w-32 h-20 sm:h-32 bg-white bg-opacity-5 rounded-full"></div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="js/scripts.js"></script>
-  </body>
-</html>
+</div>
+
+<!-- Projects List -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200">
+    <div class="px-4 sm:px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+            <i class="fas fa-folder-open mr-2 text-ucs-red"></i>Lista de Proyectos
+        </h3>
+        <div class="flex items-center space-x-2 text-sm text-gray-500">
+            <i class="fas fa-info-circle"></i>
+            <span>{{ Proyectos|length }} proyecto{{ Proyectos|length|pluralize }}</span>
+        </div>
+    </div>
+
+    <div class="p-4 sm:p-6">
+        {% if Proyectos %}
+            <!-- Desktop Table View -->
+            <div class="hidden lg:block overflow-x-auto">
+                <table class="min-w-full">
+                    <thead>
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-3 pr-4 text-sm font-medium text-gray-900">
+                                <i class="fas fa-heading mr-1 text-ucs-red"></i>Título
+                            </th>
+                            <th class="text-left py-3 pr-4 text-sm font-medium text-gray-900">
+                                <i class="fas fa-users mr-1 text-ucs-red"></i>Autores
+                            </th>
+                            <th class="text-left py-3 pr-4 text-sm font-medium text-gray-900">
+                                <i class="fas fa-graduation-cap mr-1 text-ucs-red"></i>Carrera
+                            </th>
+                            <th class="text-left py-3 pr-4 text-sm font-medium text-gray-900">
+                                <i class="fas fa-calendar mr-1 text-ucs-red"></i>Fecha
+                            </th>
+                            <th class="text-left py-3 pr-4 text-sm font-medium text-gray-900">
+                                <i class="fas fa-flag mr-1 text-ucs-red"></i>Estado
+                            </th>
+                            <th class="text-left py-3 pr-4 text-sm font-medium text-gray-900">
+                                <i class="fas fa-cogs mr-1 text-ucs-red"></i>Acciones
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        {% for p in Proyectos %}
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="py-4 pr-4">
+                                <div class="font-medium text-gray-900">{{ p.titulo }}</div>
+                                <div class="text-sm text-gray-500 mt-1">{{ p.descripcion|truncatechars:60 }}</div>
+                            </td>
+                            <td class="py-4 pr-4">
+                                <div class="text-sm text-gray-900">{{ p.autores }}</div>
+                                <div class="text-xs text-gray-500">{{ p.cedula }}</div>
+                            </td>
+                            <td class="py-4 pr-4">
+                                <div class="text-sm text-gray-900">{{ p.pnf }}</div>
+                                <div class="text-xs text-gray-500">{{ p.trayecto }} - {{ p.seccion }}</div>
+                            </td>
+                            <td class="py-4 pr-4">
+                                <div class="text-sm text-gray-900">{{ p.fecha_subido }}</div>
+                                <div class="text-xs text-gray-500">{{ p.tutor }}</div>
+                            </td>
+                            <td class="py-4 pr-4">
+                                {% if p.revisado %}
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <i class="fas fa-check-circle mr-1"></i>Aprobado
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        <i class="fas fa-clock mr-1"></i>Revisión
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="py-4 pr-4">
+                                <div class="flex items-center space-x-2">
+                                    <a href="{% url 'proyecto_detalle' p.id %}" 
+                                       class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-ucs-red bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
+                                        <i class="fas fa-eye mr-1"></i>Ver
+                                    </a>
+                                    <a href="{% url 'editarproyectos' p.id %}" 
+                                       class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                        <i class="fas fa-edit mr-1"></i>Editar
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Mobile Card View -->
+            <div class="lg:hidden space-y-4">
+                {% for p in Proyectos %}
+                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex-1">
+                            <h4 class="font-medium text-gray-900 mb-1">{{ p.titulo }}</h4>
+                            <p class="text-sm text-gray-600 mb-2">{{ p.descripcion|truncatechars:80 }}</p>
+                            <div class="flex flex-wrap gap-2 text-xs text-gray-500">
+                                <span><i class="fas fa-users mr-1"></i>{{ p.autores }}</span>
+                                <span><i class="fas fa-id-card mr-1"></i>{{ p.cedula }}</span>
+                            </div>
+                        </div>
+                        {% if p.revisado %}
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <i class="fas fa-check-circle mr-1"></i>Aprobado
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                <i class="fas fa-clock mr-1"></i>Revisión
+                            </span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-2 text-xs text-gray-500 mb-3">
+                        <div><i class="fas fa-graduation-cap mr-1 text-ucs-red"></i>{{ p.pnf }}</div>
+                        <div><i class="fas fa-route mr-1 text-ucs-red"></i>{{ p.trayecto }}</div>
+                        <div><i class="fas fa-layer-group mr-1 text-ucs-red"></i>{{ p.seccion }}</div>
+                        <div><i class="fas fa-calendar mr-1 text-ucs-red"></i>{{ p.fecha_subido }}</div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <div class="text-xs text-gray-500">
+                            <i class="fas fa-chalkboard-teacher mr-1"></i>{{ p.tutor }}
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <a href="{% url 'proyecto_detalle' p.id %}" 
+                               class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-ucs-red bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
+                                <i class="fas fa-eye mr-1"></i>Ver detalle
+                            </a>
+                            <a href="{% url 'editarproyectos' p.id %}" 
+                               class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                <i class="fas fa-edit mr-1"></i>Editar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="text-center py-12">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                    <i class="fas fa-folder-open text-gray-400 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Aún no tienes proyectos registrados</h3>
+                <p class="text-gray-500 mb-6">Comienza creando tu primer proyecto académico</p>
+                <a href="{% url 'subir' %}" 
+                   class="inline-flex items-center px-6 py-3 bg-ucs-red text-white rounded-lg hover:bg-red-700 transition-colors font-medium">
+                    <i class="fas fa-plus mr-2"></i>Registrar Proyecto
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

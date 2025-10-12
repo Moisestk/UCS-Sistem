@@ -1,0 +1,335 @@
+{% extends 'panel/base.html' %}
+{% block title %}Papelera de Usuarios | Sistema UCS{% endblock %}
+{% block content %}
+<div class="mb-8">
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-3xl font-bold text-ucs-red flex items-center">
+                <i class="fas fa-trash-restore mr-3"></i>Papelera de Usuarios
+            </h2>
+            <p class="text-gray-600 mt-2">Usuarios eliminados temporalmente. Puedes restaurar o eliminar definitivamente.</p>
+        </div>
+        <a href="{% url 'panel:users_list' %}" 
+           class="bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 px-6 py-3 rounded-xl hover:from-gray-200 hover:to-gray-300 transition-all duration-300 shadow-md hover:shadow-lg flex items-center">
+            <i class="fas fa-arrow-left mr-2"></i>Volver a Usuarios
+        </a>
+    </div>
+
+    <!-- Indicador de total en papelera -->
+    <div class="text-sm text-gray-600 mt-3">
+      <i class="fas fa-info-circle mr-1"></i>
+      Total en papelera: {{ total_trashed }}
+    </div>
+</div>
+
+<!-- Información de la papelera -->
+<div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-r-lg">
+    <div class="flex">
+        <div class="flex-shrink-0">
+            <i class="fas fa-exclamation-triangle text-yellow-400 text-xl"></i>
+        </div>
+        <div class="ml-3">
+            <p class="text-sm text-yellow-700">
+                <strong>Importante:</strong> Los usuarios en la papelera pueden ser restaurados o eliminados definitivamente. 
+                La eliminación definitiva es irreversible.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla de usuarios en papelera -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-gray-900 font-semibold flex items-center">
+            <i class="fas fa-trash-alt mr-2 text-ucs-red"></i>Usuarios en Papelera
+        </h3>
+    </div>
+    
+    <div class="overflow-x-auto">
+        <table class="min-w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <i class="fas fa-hashtag mr-1"></i>ID
+                    </th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <i class="fas fa-user mr-1"></i>Usuario
+                    </th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <i class="fas fa-id-badge mr-1"></i>Nombre
+                    </th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <i class="fas fa-envelope mr-1"></i>Email
+                    </th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <i class="fas fa-calendar-times mr-1"></i>Fecha en Papelera
+                    </th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <i class="fas fa-cogs mr-1"></i>Acciones
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for u in page_obj.object_list %}
+                <tr class="hover:bg-red-50 transition-colors duration-200">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        #{{ u.id }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="h-10 w-10 rounded-full bg-gray-400 text-white flex items-center justify-center font-semibold mr-3">
+                                {{ u.username|first|upper }}
+                            </div>
+                            <div>
+                                <span class="text-sm font-medium text-gray-900">{{ u.username }}</span>
+                                <div class="text-xs text-red-600 flex items-center">
+                                    <i class="fas fa-trash text-xs mr-1"></i>En papelera
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {{ u.first_name|default:"—" }} {{ u.last_name|default:"" }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        {{ u.email|default:"—" }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">
+                            <i class="fas fa-calendar mr-1 text-orange-500"></i>
+                            {{ u.profile.trashed_at|date:'d/m/Y' }}
+                        </div>
+                        <div class="text-xs text-gray-500">
+                            {{ u.profile.trashed_at|date:'H:i' }}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <div class="flex items-center space-x-2">
+                            <!-- Restaurar usuario -->
+                            <form method="post" action="{% url 'panel:user_action' u.id %}" class="inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="restore" />
+                                <button type="button" 
+                                        class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 flex items-center hover:shadow-lg"
+                                        onclick="showRestoreModal('{{ u.username }}', '{{ u.id }}')">
+                                    <i class="fas fa-undo mr-1"></i>Restaurar
+                                </button>
+                            </form>
+
+                            <!-- Eliminar definitivamente -->
+                            {% if not u.is_superuser and u.id != request.user.id %}
+                            <a href="{% url 'panel:user_trash_confirm' u.id %}" 
+                               class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 flex items-center hover:shadow-lg">
+                                <i class="fas fa-times mr-1"></i>Eliminar Definitivamente
+                            </a>
+                            {% else %}
+                            <span class="bg-gray-300 text-gray-500 px-3 py-2 rounded-lg text-xs font-medium flex items-center cursor-not-allowed">
+                                <i class="fas fa-lock mr-1"></i>Protegido
+                            </span>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="px-6 py-12 text-center">
+                        <div class="flex flex-col items-center">
+                            <i class="fas fa-trash-alt text-4xl text-gray-300 mb-4"></i>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">Papelera vacía</h3>
+                            <p class="text-gray-500">No hay usuarios en la papelera en este momento.</p>
+                            <a href="{% url 'panel:users_list' %}" 
+                               class="mt-4 bg-ucs-red text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center">
+                                <i class="fas fa-users mr-2"></i>Ver Usuarios Activos
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Paginación -->
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+        <div class="flex items-center justify-between">
+            <div class="text-sm text-gray-600">
+                <i class="fas fa-info-circle mr-1"></i>
+                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                ({{ page_obj.paginator.count }} usuarios en papelera)
+            </div>
+            <div class="flex space-x-2">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" 
+                       class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-chevron-left mr-1"></i>Anterior
+                    </a>
+                {% endif %}
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" 
+                       class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors">
+                        Siguiente<i class="fas fa-chevron-right ml-1"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Estadísticas de la papelera -->
+{% if page_obj.object_list %}
+<div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <i class="fas fa-trash-alt text-2xl text-orange-500"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">Total en Papelera</p>
+                <p class="text-2xl font-bold text-gray-900">{{ page_obj.paginator.count }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <i class="fas fa-undo text-2xl text-green-500"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">Pueden Restaurarse</p>
+                <p class="text-2xl font-bold text-gray-900">{{ page_obj.paginator.count }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <i class="fas fa-exclamation-triangle text-2xl text-red-500"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">Acción Requerida</p>
+                <p class="text-sm text-gray-700">Revisar y decidir</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<style>
+    /* Animaciones para hover en filas de papelera */
+    tr:hover {
+        transform: translateX(2px);
+    }
+    
+    /* Efectos especiales para botones de papelera */
+    .restore-btn:hover {
+        animation: pulse 1s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    /* Modal animations */
+    #restoreModal.show {
+        display: flex !important;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    #restoreModal.show > div {
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+        from { transform: scale(0.9) translateY(-20px); opacity: 0; }
+        to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+</style>
+
+<!-- Modal de confirmación de restauración -->
+<div id="restoreModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                <i class="fas fa-undo mr-2 text-green-500"></i>
+                Restaurar Usuario
+            </h3>
+        </div>
+        <div class="p-6">
+            <p class="text-gray-600 mb-4">
+                ¿Estás seguro de restaurar el usuario <strong id="restoreUsername"></strong>?
+            </p>
+            <p class="text-sm text-gray-500">
+                El usuario volverá a tener acceso al sistema.
+            </p>
+        </div>
+        <div class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+            <button type="button" 
+                    onclick="hideRestoreModal()" 
+                    class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
+                Cancelar
+            </button>
+            <button type="button" 
+                    onclick="confirmRestore()" 
+                    class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                Restaurar Usuario
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentRestoreUserId = null;
+
+    function showRestoreModal(username, userId) {
+        currentRestoreUserId = userId;
+        document.getElementById('restoreUsername').textContent = username;
+        const modal = document.getElementById('restoreModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('show');
+    }
+
+    function hideRestoreModal() {
+        const modal = document.getElementById('restoreModal');
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+        currentRestoreUserId = null;
+    }
+
+    function confirmRestore() {
+        if (currentRestoreUserId) {
+            // Encontrar el formulario correspondiente y enviarlo
+            const form = document.querySelector(`form[action*="${currentRestoreUserId}"] input[value="restore"]`).closest('form');
+            if (form) {
+                form.submit();
+            }
+        }
+        hideRestoreModal();
+    }
+
+    // Cerrar modal al hacer clic fuera
+    document.getElementById('restoreModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            hideRestoreModal();
+        }
+    });
+
+    // Cerrar modal con ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            hideRestoreModal();
+        }
+    });
+</script>
+{% endblock %}

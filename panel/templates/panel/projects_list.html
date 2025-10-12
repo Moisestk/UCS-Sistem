@@ -1,0 +1,304 @@
+{% extends 'panel/base.html' %}
+{% block title %}Proyectos | Panel{% endblock %}
+{% block content %}
+<div class="mb-6 sm:mb-8">
+    <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Proyectos</h2>
+    <p class="text-sm sm:text-base text-gray-600 mt-1">Gestión y seguimiento de proyectos estudiantiles UCS</p>
+</div>
+
+<!-- Advanced Filters -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 mb-4 sm:mb-6">
+    <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
+        <i class="fas fa-filter text-ucs-blue mr-2"></i>
+        Filtros de Búsqueda
+    </h3>
+    
+    <form method="get" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 sm:gap-4">
+        <div class="lg:col-span-2">
+            <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">PNF</label>
+            <select name="pnf" class="w-full px-2 sm:px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ucs-blue focus:border-ucs-blue transition-all">
+                <option value="">Todos los PNF</option>
+                {% for p in pnfs %}
+                <option value="{{ p.id }}" {% if filters.pnf|default:'' == p.id|stringformat:'s' %}selected{% endif %}>
+                    {{ p.nombre_pnf }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="lg:col-span-2">
+            <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Trayecto</label>
+            <select name="trayecto" class="w-full px-2 sm:px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ucs-blue focus:border-ucs-blue transition-all">
+                <option value="">Todos los Trayectos</option>
+                {% for t in trayectos %}
+                <option value="{{ t.id }}" {% if filters.trayecto|default:'' == t.id|stringformat:'s' %}selected{% endif %}>
+                    {{ t.nombre_trayecto }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="lg:col-span-2">
+            <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Tutor</label>
+            <input type="text" name="tutor" value="{{ filters.tutor|default:'' }}" 
+                   class="w-full px-2 sm:px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ucs-blue focus:border-ucs-blue transition-all"
+                   placeholder="Nombre del tutor...">
+        </div>
+        
+        <div class="lg:col-span-2">
+            <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Fecha de Subida</label>
+            <input type="date" name="fecha" value="{{ filters.fecha|default:'' }}" 
+                   class="w-full px-2 sm:px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ucs-blue focus:border-ucs-blue transition-all">
+        </div>
+        
+        <div class="lg:col-span-4">
+            <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Búsqueda General</label>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+                <input type="text" name="q" value="{{ filters.q|default:'' }}" 
+                       placeholder="Buscar por autores, cédula o título..." 
+                       class="flex-1 px-2 sm:px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-ucs-blue focus:border-ucs-blue transition-all">
+                <div class="flex space-x-2">
+                    <button type="submit" class="bg-ucs-blue text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-700 transition-all flex items-center text-sm">
+                        <i class="fas fa-search mr-1 sm:mr-2"></i><span class="hidden sm:inline">Filtrar</span>
+                    </button>
+                    <a href="{% url 'panel:projects_list' %}" 
+                       class="bg-gray-100 text-gray-600 px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-200 transition-all flex items-center text-sm"
+                       title="Limpiar filtros">
+                        <i class="fas fa-redo"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+    
+    <div class="text-sm text-gray-600">
+        <i class="fas fa-project-diagram text-ucs-blue mr-2"></i>
+        {{ page_obj.paginator.count }} proyecto{{ page_obj.paginator.count|pluralize }} encontrado{{ page_obj.paginator.count|pluralize }}
+    </div>
+</div>
+
+<!-- Projects Table -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+        <h3 class="text-base sm:text-lg font-semibold text-gray-900">
+            <i class="fas fa-table text-ucs-red mr-2"></i>
+            Lista de Proyectos
+        </h3>
+    </div>
+    
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-2 sm:px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Autores</th>
+                    <th class="px-2 sm:px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Cédula</th>
+                    <th class="px-2 sm:px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PNF</th>
+                    <th class="px-2 sm:px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Trayecto</th>
+                    <th class="px-2 sm:px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Tutor</th>
+                    <th class="px-2 sm:px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Fecha</th>
+                    <th class="px-2 sm:px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                    <th class="px-2 sm:px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for p in page_obj.object_list %}
+                <tr class="hover:bg-gray-50 transition-all">
+                    <td class="px-2 sm:px-3 lg:px-6 py-3 sm:py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10">
+                                <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-gradient-to-br from-ucs-blue to-blue-600 flex items-center justify-center text-white text-xs sm:text-sm font-bold">
+                                    {{ p.autores|first|upper }}
+                                </div>
+                            </div>
+                            <div class="ml-2 sm:ml-4 min-w-0 flex-1">
+                                <div class="text-xs sm:text-sm font-medium text-gray-900 truncate">{{ p.autores|truncatechars:15 }}</div>
+                                <div class="text-xs text-gray-500">#{{ p.id }}</div>
+                                <div class="text-xs text-gray-500 sm:hidden">{{ p.cedula }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-2 sm:px-3 lg:px-6 py-3 sm:py-4 whitespace-nowrap text-sm text-gray-900 hidden sm:table-cell">
+                        <div class="flex items-center">
+                            <i class="fas fa-id-card text-gray-400 mr-2"></i>
+                            {{ p.cedula }}
+                        </div>
+                    </td>
+                    <td class="px-2 sm:px-3 lg:px-6 py-3 sm:py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {{ p.pnf.nombre_pnf|truncatechars:12 }}
+                        </span>
+                    </td>
+                    <td class="px-2 sm:px-3 lg:px-6 py-3 sm:py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
+                        <div class="flex items-center">
+                            <i class="fas fa-route text-gray-400 mr-2"></i>
+                            {{ p.trayecto.nombre_trayecto }}
+                        </div>
+                    </td>
+                    <td class="px-2 sm:px-3 lg:px-6 py-3 sm:py-4 whitespace-nowrap text-sm text-gray-500 hidden md:table-cell">
+                        <div class="flex items-center">
+                            <i class="fas fa-user-graduate text-gray-400 mr-2"></i>
+                            {{ p.tutor|default:"Sin asignar"|truncatechars:12 }}
+                        </div>
+                    </td>
+                    <td class="px-2 sm:px-3 lg:px-6 py-3 sm:py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
+                        <div class="flex items-center">
+                            <i class="fas fa-calendar text-gray-400 mr-2"></i>
+                            {{ p.fecha_subido|date:"d/m/Y" }}
+                        </div>
+                    </td>
+                    <td class="px-2 sm:px-3 lg:px-6 py-3 sm:py-4 whitespace-nowrap">
+                        {% if p.get_estado_display == 'Pendiente' %}
+                        <span class="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            <i class="fas fa-clock mr-1 text-xs"></i>
+                            <span class="hidden sm:inline">{{ p.get_estado_display }}</span>
+                            <span class="sm:hidden">Pend.</span>
+                        </span>
+                        {% elif p.get_estado_display == 'Aprobado' %}
+                        <span class="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <i class="fas fa-check-circle mr-1 text-xs"></i>
+                            <span class="hidden sm:inline">{{ p.get_estado_display }}</span>
+                            <span class="sm:hidden">Aprob.</span>
+                        </span>
+                        {% elif p.get_estado_display == 'Rechazado' %}
+                        <span class="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            <i class="fas fa-times-circle mr-1 text-xs"></i>
+                            <span class="hidden sm:inline">{{ p.get_estado_display }}</span>
+                            <span class="sm:hidden">Rech.</span>
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            <i class="fas fa-question-circle mr-1 text-xs"></i>
+                            <span class="hidden sm:inline">{{ p.get_estado_display }}</span>
+                            <span class="sm:hidden">N/A</span>
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-2 sm:px-3 lg:px-6 py-3 sm:py-4 whitespace-nowrap text-sm font-medium">
+                        <a href="{% url 'panel:project_detail' p.id %}" 
+                           class="text-ucs-blue hover:text-blue-700 hover:bg-blue-50 px-2 sm:px-3 py-2 sm:py-1 rounded transition-all flex items-center text-xs sm:text-sm min-h-[32px] sm:min-h-[28px]">
+                            <i class="fas fa-eye mr-1 sm:mr-2 text-xs"></i>
+                            <span class="hidden sm:inline">Ver Detalles</span>
+                            <span class="sm:hidden">Ver</span>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="px-3 sm:px-6 py-8 sm:py-12 text-center">
+                        <div class="text-gray-500">
+                            <i class="fas fa-folder-open text-3xl sm:text-4xl mb-3 sm:mb-4 opacity-50"></i>
+                            <p class="text-base sm:text-lg font-medium">No se encontraron proyectos</p>
+                            <p class="text-xs sm:text-sm">Intenta ajustar los filtros de búsqueda</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pagination -->
+<div class="flex flex-col sm:flex-row items-center justify-between mt-4 sm:mt-6 space-y-3 sm:space-y-0">
+    <div class="flex items-center text-xs sm:text-sm text-gray-600">
+        <i class="fas fa-info-circle text-ucs-blue mr-2"></i>
+        <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+    </div>
+    
+    <div class="flex items-center space-x-2">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&pnf={{ filters.pnf }}&trayecto={{ filters.trayecto }}&tutor={{ filters.tutor }}&fecha={{ filters.fecha }}&q={{ filters.q }}" 
+           class="flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-ucs-blue transition-all">
+            <i class="fas fa-chevron-left mr-1 sm:mr-2"></i>
+            <span class="hidden sm:inline">Anterior</span>
+            <span class="sm:hidden">Ant.</span>
+        </a>
+        {% endif %}
+        
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&pnf={{ filters.pnf }}&trayecto={{ filters.trayecto }}&tutor={{ filters.tutor }}&fecha={{ filters.fecha }}&q={{ filters.q }}" 
+           class="flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-ucs-blue transition-all">
+            <span class="hidden sm:inline">Siguiente</span>
+            <span class="sm:hidden">Sig.</span>
+            <i class="fas fa-chevron-right ml-1 sm:ml-2"></i>
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="mt-6 sm:mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-clock text-yellow-600 text-sm sm:text-base"></i>
+                </div>
+            </div>
+            <div class="ml-2 sm:ml-3">
+                <p class="text-xs sm:text-sm font-medium text-gray-600">Pendientes</p>
+                <p class="text-sm sm:text-lg font-semibold text-gray-900">{{ stats.pendientes }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-check-circle text-green-600 text-sm sm:text-base"></i>
+                </div>
+            </div>
+            <div class="ml-2 sm:ml-3">
+                <p class="text-xs sm:text-sm font-medium text-gray-600">Aprobados</p>
+                <p class="text-sm sm:text-lg font-semibold text-gray-900">{{ stats.aprobados }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-times-circle text-red-600 text-sm sm:text-base"></i>
+                </div>
+            </div>
+            <div class="ml-2 sm:ml-3">
+                <p class="text-xs sm:text-sm font-medium text-gray-600">Rechazados</p>
+                <p class="text-sm sm:text-lg font-semibold text-gray-900">{{ stats.rechazados }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-folder text-blue-600 text-sm sm:text-base"></i>
+                </div>
+            </div>
+            <div class="ml-2 sm:ml-3">
+                <p class="text-xs sm:text-sm font-medium text-gray-600">Total</p>
+                <p class="text-sm sm:text-lg font-semibold text-gray-900">{{ page_obj.paginator.count }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-submit functionality for select fields
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form[method="get"]');
+    const autoSubmitFields = ['select[name="pnf"]', 'select[name="trayecto"]', 'input[name="fecha"]'];
+    
+    autoSubmitFields.forEach(selector => {
+        const field = document.querySelector(selector);
+        if (field) {
+            field.addEventListener('change', () => form.submit());
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,271 @@
+{% extends 'index.html' %}
+{% block title %}Detalle de Proyecto | SRP{% endblock %}
+{% block breadcrumb %}
+  <a href="/misproyectos/" class="text-gray-500 hover:text-ucs-red transition-colors">Mis Proyectos</a>
+  <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
+  <span class="text-ucs-red font-medium">{{ proyecto.titulo|truncatechars:40 }}</span>
+{% endblock %}
+
+{% block content %}
+<!-- Welcome Section -->
+<div class="mb-8">
+    <div class="bg-gradient-to-r from-ucs-red to-red-700 rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden">
+        <div class="relative z-10">
+            <h2 class="text-xl sm:text-2xl font-bold mb-2">{{ proyecto.titulo }}</h2>
+            <p class="text-red-100 mb-4">Gestiona los momentos y versiones de tu proyecto</p>
+            <div class="flex flex-wrap gap-4">
+                <a href="{% url 'editarproyectos' proyecto.id %}" class="bg-white text-ucs-red px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center">
+                    <i class="fas fa-edit mr-2"></i>Editar Datos
+                </a>
+                <a href="{% url 'misproyectos' %}" class="bg-red-800 text-white px-6 py-3 rounded-lg font-medium hover:bg-red-900 transition-colors flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i>Volver a Lista
+                </a>
+            </div>
+        </div>
+        <!-- Decorative elements -->
+        <div class="absolute top-0 right-0 -mt-4 -mr-4 w-16 sm:w-24 h-16 sm:h-24 bg-white bg-opacity-10 rounded-full"></div>
+        <div class="absolute bottom-0 right-4 sm:right-8 -mb-4 sm:-mb-8 w-20 sm:w-32 h-20 sm:h-32 bg-white bg-opacity-5 rounded-full"></div>
+    </div>
+</div>
+
+<!-- Main Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
+    <!-- Left Column - Moments -->
+    <div class="lg:col-span-3 order-2 lg:order-1 space-y-6">
+        {% for m in momentos %}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+            <!-- Moment Header -->
+            <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                        <i class="fas fa-layer-group mr-2 text-ucs-red"></i>{{ m.nombre }}
+                    </h3>
+                    {% with lv=m.latest_version %}
+                        {% if lv %}
+                            <a href="{{ lv.archivo.url }}" 
+                               class="inline-flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium">
+                                <i class="fas fa-download mr-2"></i>Descargar última versión ({{ lv.etiqueta }})
+                            </a>
+                        {% else %}
+                            <span class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm">
+                                <i class="fas fa-file-slash mr-2"></i>Sin archivos
+                            </span>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+
+            <!-- Moment Status -->
+            <div class="p-4 sm:p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-clipboard-check mr-2 text-blue-600"></i>
+                            <span class="text-sm font-medium text-gray-700">Estado de revisión</span>
+                        </div>
+                        <div class="text-sm text-gray-900 font-medium">
+                            {{ m.estado_revision|default:"Pendiente de revisión" }}
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-comment-dots mr-2 text-purple-600"></i>
+                            <span class="text-sm font-medium text-gray-700">Feedback del administrador</span>
+                        </div>
+                        <div class="text-sm text-gray-900 whitespace-pre-line">
+                            {{ m.feedback|default:"Sin comentarios aún" }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Section -->
+                <div class="border-t border-gray-200 pt-6">
+                    <h4 class="text-md font-medium text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-cloud-upload-alt mr-2 text-ucs-red"></i>Subir nueva versión
+                    </h4>
+
+                    {% if m.nombre in enabled_moments %}
+                        <form method="post" enctype="multipart/form-data" action="{% url 'momento_upload' m.id %}" 
+                              class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            {% csrf_token %}
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <div class="flex-1">
+                                    <input type="file" name="archivo" required
+                                           class="block w-full text-sm file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-ucs-red file:text-white hover:file:bg-red-700 file:transition-colors border border-gray-300 rounded-lg" />
+                                </div>
+                                <button type="submit" 
+                                        class="inline-flex items-center px-6 py-2 bg-ucs-red text-white rounded-lg hover:bg-red-700 transition-colors font-medium">
+                                    <i class="fas fa-upload mr-2"></i>Subir Archivo
+                                </button>
+                            </div>
+                        </form>
+                    {% else %}
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-lock mr-3 text-yellow-600"></i>
+                                <div>
+                                    <h5 class="text-sm font-medium text-yellow-800">Momento bloqueado</h5>
+                                    <p class="text-sm text-yellow-700 mt-1">Este momento se habilitará cuando se apruebe el momento anterior.</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Version History -->
+                <div class="border-t border-gray-200 pt-6 mt-6">
+                    <h4 class="text-md font-medium text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-history mr-2 text-ucs-red"></i>Historial de versiones
+                    </h4>
+                    
+                    {% if m.versions.all %}
+                        <!-- Desktop Table -->
+                        <div class="hidden sm:block overflow-x-auto">
+                            <table class="min-w-full">
+                                <thead>
+                                    <tr class="border-b border-gray-200">
+                                        <th class="text-left py-2 pr-4 text-sm font-medium text-gray-700">Versión</th>
+                                        <th class="text-left py-2 pr-4 text-sm font-medium text-gray-700">Fecha</th>
+                                        <th class="text-left py-2 pr-4 text-sm font-medium text-gray-700">Origen</th>
+                                        <th class="text-left py-2 pr-4 text-sm font-medium text-gray-700">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    {% for v in m.versions.all %}
+                                    <tr class="{% if v.origen == 'ADMIN' %}bg-blue-50 hover:bg-blue-100{% else %}bg-gray-50 hover:bg-gray-100{% endif %} transition-colors">
+                                        <td class="py-3 pr-4">
+                                            <div class="flex items-center space-x-2">
+                                                {% if v.origen == 'ADMIN' %}
+                                                    <div class="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
+                                                {% else %}
+                                                    <div class="w-2.5 h-2.5 rounded-full bg-gray-500"></div>
+                                                {% endif %}
+                                                <span class="text-sm font-medium">{{ v.etiqueta }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 pr-4 text-sm text-gray-600">{{ v.created_at|date:'d M Y H:i' }}</td>
+                                        <td class="py-3 pr-4">
+                                            {% if v.origen == 'ADMIN' %}
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                    <i class="fas fa-user-shield mr-1"></i>Admin
+                                                </span>
+                                            {% else %}
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                    <i class="fas fa-user mr-1"></i>Estudiante
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="py-3 pr-4">
+                                            <a href="{{ v.archivo.url }}" 
+                                               class="inline-flex items-center text-ucs-red hover:text-red-700 text-sm font-medium">
+                                                <i class="fas fa-download mr-1"></i>Descargar
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Mobile Cards -->
+                        <div class="sm:hidden space-y-3">
+                            {% for v in m.versions.all %}
+                            <div class="{% if v.origen == 'ADMIN' %}bg-blue-50 border-blue-200{% else %}bg-gray-50 border-gray-200{% endif %} border rounded-lg p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center space-x-2">
+                                        {% if v.origen == 'ADMIN' %}
+                                            <div class="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
+                                        {% else %}
+                                            <div class="w-2.5 h-2.5 rounded-full bg-gray-500"></div>
+                                        {% endif %}
+                                        <span class="text-sm font-medium">{{ v.etiqueta }}</span>
+                                    </div>
+                                    {% if v.origen == 'ADMIN' %}
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            <i class="fas fa-user-shield mr-1"></i>Admin
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            <i class="fas fa-user mr-1"></i>Estudiante
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-gray-600">{{ v.created_at|date:'d M Y H:i' }}</span>
+                                    <a href="{{ v.archivo.url }}" 
+                                       class="inline-flex items-center text-ucs-red hover:text-red-700 text-sm font-medium">
+                                        <i class="fas fa-download mr-1"></i>Descargar
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-6 text-gray-500">
+                            <i class="fas fa-file-slash text-2xl mb-2 block"></i>
+                            <p class="text-sm">Aún sin versiones</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Right Column - Project Info -->
+    <div class="order-1 lg:order-2">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 sticky top-24">
+            <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                    <i class="fas fa-info-circle mr-2 text-ucs-red"></i>Información del Proyecto
+                </h3>
+            </div>
+            <div class="p-4 sm:p-6 space-y-4">
+                <div class="bg-gray-50 rounded-lg p-3">
+                    <dt class="text-xs font-medium text-gray-500 mb-1">
+                        <i class="fas fa-users mr-1 text-ucs-red"></i>Autores
+                    </dt>
+                    <dd class="text-sm font-medium text-gray-900">{{ proyecto.autores }}</dd>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-3">
+                    <dt class="text-xs font-medium text-gray-500 mb-1">
+                        <i class="fas fa-id-card mr-1 text-ucs-red"></i>Cédula
+                    </dt>
+                    <dd class="text-sm font-medium text-gray-900">{{ proyecto.cedula }}</dd>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-3">
+                    <dt class="text-xs font-medium text-gray-500 mb-1">
+                        <i class="fas fa-graduation-cap mr-1 text-ucs-red"></i>PNF
+                    </dt>
+                    <dd class="text-sm font-medium text-gray-900">{{ proyecto.pnf.nombre_pnf }}</dd>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-3">
+                    <dt class="text-xs font-medium text-gray-500 mb-1">
+                        <i class="fas fa-route mr-1 text-ucs-red"></i>Trayecto
+                    </dt>
+                    <dd class="text-sm font-medium text-gray-900">{{ proyecto.trayecto.nombre_trayecto }}</dd>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-3">
+                    <dt class="text-xs font-medium text-gray-500 mb-1">
+                        <i class="fas fa-chalkboard-teacher mr-1 text-ucs-red"></i>Tutor
+                    </dt>
+                    <dd class="text-sm font-medium text-gray-900">{{ proyecto.tutor }}</dd>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-3">
+                    <dt class="text-xs font-medium text-gray-500 mb-1">
+                        <i class="fas fa-calendar mr-1 text-ucs-red"></i>Fecha creación
+                    </dt>
+                    <dd class="text-sm font-medium text-gray-900">{{ proyecto.fecha_creacion }}</dd>
+                </div>
+                
+                <div class="pt-4 border-t border-gray-200">
+                    <a href="{% url 'editarproyectos' proyecto.id %}" 
+                       class="w-full inline-flex items-center justify-center px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-black transition-colors text-sm font-medium">
+                        <i class="fas fa-edit mr-2"></i>Editar datos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

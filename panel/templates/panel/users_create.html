@@ -1,0 +1,105 @@
+{% extends 'panel/base.html' %}
+{% block title %}Crear Usuario | Sistema UCS{% endblock %}
+{% block content %}
+<div class="mb-6 sm:mb-8">
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold text-ucs-red flex items-center">
+        <i class="fas fa-user-plus mr-2 sm:mr-3"></i>Crear Usuario
+      </h2>
+      <p class="text-sm sm:text-base text-gray-600 mt-1 sm:mt-2">Registra un nuevo usuario del sistema</p>
+    </div>
+    <a href="{% url 'panel:users_list' %}"
+       class="bg-gray-100 text-gray-700 px-4 sm:px-6 py-2 sm:py-3 rounded-xl hover:bg-gray-200 transition-all shadow-md flex items-center text-sm sm:text-base w-full sm:w-auto justify-center">
+      <i class="fas fa-arrow-left mr-2"></i>Volver al listado
+    </a>
+  </div>
+</div>
+
+{% if messages %}
+  <div class="space-y-2 mb-4">
+    {% for m in messages %}
+      <div class="px-4 py-2 rounded border
+                  {% if m.tags == 'error' %}bg-red-50 border-red-200 text-red-700
+                  {% elif m.tags == 'success' %}bg-green-50 border-green-200 text-green-700
+                  {% else %}bg-gray-50 border-gray-200 text-gray-700{% endif %}">
+        {{ m }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+  <form method="post" class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+    {% csrf_token %}
+
+    <div>
+      <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+        <i class="fas fa-user mr-1 text-ucs-red"></i>Cédula de identidad
+      </label>
+      <input type="text" name="username" value="{{ username|default:'' }}" required
+             minlength="7" maxlength="8" pattern="^\d{7,8}$" inputmode="numeric" title="Solo números, 7 u 8 dígitos"
+             class="w-full border-2 border-gray-200 rounded-lg px-3 sm:px-4 py-3 sm:py-3 text-base focus:border-ucs-red focus:ring-2 focus:ring-red-100 transition-all min-h-[44px]" />
+    </div>
+
+    <div>
+      <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+        <i class="fas fa-envelope mr-1 text-ucs-red"></i>Email
+      </label>
+      <input type="email" name="email" value="{{ email|default:'' }}"
+             class="w-full border-2 border-gray-200 rounded-lg px-3 sm:px-4 py-3 sm:py-3 text-base focus:border-ucs-red focus:ring-2 focus:ring-red-100 transition-all min-h-[44px]" />
+    </div>
+
+    <div>
+      <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+        <i class="fas fa-id-badge mr-1 text-ucs-red"></i>Nombre
+      </label>
+      <input type="text" name="first_name" value="{{ first_name|default:'' }}"
+             class="w-full border-2 border-gray-200 rounded-lg px-3 sm:px-4 py-3 sm:py-3 text-base focus:border-ucs-red focus:ring-2 focus:ring-red-100 transition-all min-h-[44px]" />
+    </div>
+
+    <div>
+      <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+        <i class="fas fa-id-badge mr-1 text-ucs-red"></i>Apellido
+      </label>
+      <input type="text" name="last_name" value="{{ last_name|default:'' }}"
+             class="w-full border-2 border-gray-200 rounded-lg px-3 sm:px-4 py-3 sm:py-3 text-base focus:border-ucs-red focus:ring-2 focus:ring-red-100 transition-all min-h-[44px]" />
+    </div>
+
+    <div>
+      <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+        <i class="fas fa-user-tag mr-1 text-ucs-red"></i>Rol
+      </label>
+      <select name="role" required
+              class="w-full border-2 border-gray-200 rounded-lg px-3 sm:px-4 py-3 sm:py-3 text-base focus:border-ucs-red focus:ring-2 focus:ring-red-100 transition-all min-h-[44px]">
+        <option value="">Selecciona un rol</option>
+        <option value="ADMIN" {% if role_sel == 'ADMIN' %}selected{% endif %}>Administrador</option>
+        <option value="ESTUDIANTE" {% if role_sel == 'ESTUDIANTE' %}selected{% endif %}>Estudiante</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+        <i class="fas fa-lock mr-1 text-ucs-red"></i>Contraseña
+      </label>
+      <input type="password" name="password1" required
+             class="w-full border-2 border-gray-200 rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-sm focus:border-ucs-red focus:ring-2 focus:ring-red-100 transition-all" />
+    </div>
+
+    <div>
+      <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+        <i class="fas fa-lock mr-1 text-ucs-red"></i>Repite Contraseña
+      </label>
+      <input type="password" name="password2" required
+             class="w-full border-2 border-gray-200 rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-sm focus:border-ucs-red focus:ring-2 focus:ring-red-100 transition-all" />
+    </div>
+
+    <div class="sm:col-span-2 flex justify-end">
+      <button type="submit"
+              class="bg-ucs-red hover:bg-red-700 text-white px-4 sm:px-6 py-3 sm:py-3 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg flex items-center text-sm sm:text-base min-h-[44px]">
+        <i class="fas fa-save mr-2"></i>Crear Usuario
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

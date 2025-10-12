@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Autenticación | Sistema UCS{% endblock %}</title>
+  <link rel="icon" type="image/x-icon" href="{% static 'img/mini.ico' %}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'ucs-red': '#DC2626',
+            'ucs-blue': '#1E40AF',
+            'ucs-green': '#059669',
+            'ucs-yellow': '#FCD34D',
+            'ucs-black': '#000000',
+            'ucs-white': '#FFFFFF',
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body { min-height: 100vh; }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Header simple (sin sidebar) -->
+  <header class="bg-white border-b border-gray-200">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <img src="/media/img/logo2.png" alt="UCS Logo" class="h-10 w-10 rounded-full ring-1 ring-ucs-gold object-cover">
+        <h1 class="text-lg font-bold text-gray-900">Sistema UCS</h1>
+      </div>
+      <div>
+        <a href="/login" class="text-sm text-gray-700 hover:text-ucs-red transition">
+          <i class="fas fa-sign-in-alt mr-1"></i>Volver al login
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="max-w-3xl mx-auto px-4 py-10">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="bg-gray-100 border-t border-gray-200">
+    <div class="max-w-6xl mx-auto px-4 py-4 text-center text-sm text-gray-500">
+      © Universidad de las Ciencias de la Salud
+    </div>
+  </footer>
+</body>
+</html>
