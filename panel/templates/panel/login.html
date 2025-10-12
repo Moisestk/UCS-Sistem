@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<<<<<<< HEAD
   {% load static %}
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Acceso Administrador | UCS</title>
   <link rel="icon" type="image/x-icon" href="{% static 'img/mini.ico' %}">
+=======
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acceso Administrador | UCS</title>
+>>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <style>
@@ -31,6 +37,7 @@
     }
     
     /* Hover effects mejorados */
+<<<<<<< HEAD
     button:hover:not(#togglePanelPwd) {
       transform: translateY(-1px);
     }
@@ -47,6 +54,11 @@
     #togglePanelPwd:hover {
       transform: translateY(-50%);
     }
+=======
+    button:hover {
+      transform: translateY(-1px);
+    }
+>>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
   </style>
 </head>
 <body class="min-h-screen bg-gray-50 flex items-center justify-center p-3 sm:p-4">
@@ -100,7 +112,11 @@
           required
           placeholder="Ingresa tu contraseña"
         >
+<<<<<<< HEAD
         <button type="button" id="togglePanelPwd" class="text-gray-500 p-2 hover:text-gray-700" aria-label="Mostrar u ocultar contraseña">
+=======
+        <button type="button" id="togglePanelPwd" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 p-2 hover:text-gray-700 transition-colors" aria-label="Mostrar u ocultar contraseña">
+>>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
           <i class="fas fa-eye text-lg"></i>
         </button>
       </div>

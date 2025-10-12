@@ -65,7 +65,10 @@
     </div>
 </div>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
 <!-- Gráficos Visuales -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
     <!-- Gráfico de Estados de Proyectos -->
@@ -187,7 +190,11 @@
     </div>
 </div>
 
+<<<<<<< HEAD
 <!-- Actividad Reciente -->
+=======
+<!-- Actividad Reciente y Acciones Rápidas -->
+>>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <!-- Actividad Reciente -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -223,7 +230,60 @@
         {% endif %}
     </div>
 
+<<<<<<< HEAD
     
+=======
+    <!-- Acciones Rápidas -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            <i class="fas fa-bolt text-ucs-green mr-2"></i>
+            Acciones Rápidas
+        </h3>
+        <div class="space-y-3">
+            <a href="{% url 'panel:projects_list' %}" class="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-ucs-blue hover:bg-blue-50 transition-all group">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-eye text-gray-400 group-hover:text-ucs-blue"></i>
+                    <span class="text-sm font-medium text-gray-700 group-hover:text-ucs-blue">Ver todos los proyectos</span>
+                </div>
+                <i class="fas fa-arrow-right text-gray-400 group-hover:text-ucs-blue"></i>
+            </a>
+
+            <a href="{% url 'panel:projects_list' %}?estado=PENDIENTE" class="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-ucs-yellow hover:bg-yellow-50 transition-all group">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-clock text-gray-400 group-hover:text-ucs-yellow"></i>
+                    <span class="text-sm font-medium text-gray-700 group-hover:text-ucs-yellow">Proyectos pendientes</span>
+                </div>
+                <i class="fas fa-arrow-right text-gray-400 group-hover:text-ucs-yellow"></i>
+            </a>
+
+            {% if request.user.is_staff %}
+            <a href="{% url 'panel:users_list' %}" class="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-ucs-green hover:bg-green-50 transition-all group">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-users text-gray-400 group-hover:text-ucs-green"></i>
+                    <span class="text-sm font-medium text-gray-700 group-hover:text-ucs-green">Gestionar usuarios</span>
+                </div>
+                <i class="fas fa-arrow-right text-gray-400 group-hover:text-ucs-green"></i>
+            </a>
+            {% endif %}
+
+            <a href="{% url 'panel:notifications_list' %}" class="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-ucs-red hover:bg-red-50 transition-all group">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-bell text-gray-400 group-hover:text-ucs-red"></i>
+                    <span class="text-sm font-medium text-gray-700 group-hover:text-ucs-red">Ver notificaciones</span>
+                </div>
+                <i class="fas fa-arrow-right text-gray-400 group-hover:text-ucs-red"></i>
+            </a>
+
+            <button class="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-purple-500 hover:bg-purple-50 transition-all group">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-download text-gray-400 group-hover:text-purple-500"></i>
+                    <span class="text-sm font-medium text-gray-700 group-hover:text-purple-500">Generar reporte</span>
+                </div>
+                <i class="fas fa-arrow-right text-gray-400 group-hover:text-purple-500"></i>
+            </button>
+        </div>
+    </div>
+>>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
 </div>
 
 <!-- JavaScript para Gráficos -->

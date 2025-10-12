@@ -1,9 +1,35 @@
+<<<<<<< HEAD
+=======
+#app de terceros
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin, ExportActionMixin
+
+>>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
 from django.contrib import admin
 from .models import Pnf, Proyecto, Trayecto, Seccion, Profile
 
 
+<<<<<<< HEAD
 @admin.register(Proyecto)
 class ProyectoAdmin(admin.ModelAdmin):
+=======
+class ProyectoResourse(resources.ModelResource):
+    fields = (
+        'autores',
+        'pnf',
+        'trayecto',
+        'titulo',
+        'fecha',
+        'archivo'
+    )
+    class Meta:
+        model = Proyecto
+
+@admin.register(Proyecto)
+class ProyectoAdmin (ImportExportModelAdmin, ExportActionMixin):
+    pass
+    resource_class = ProyectoResourse
+>>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
     search_fields = ('pnf__nombre_pnf','trayecto__nombre_trayecto', 'autores','tutor','cedula',)
     list_display = ('autores', 'cedula','pnf','trayecto', 'tutor', 'fecha_subido' )
     list_filter = ('pnf', 'trayecto', 'tutor', 'fecha_subido', )

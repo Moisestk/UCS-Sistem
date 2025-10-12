@@ -9,6 +9,7 @@ class PnfForm(forms.ModelForm):
     class Meta:
         model = Pnf
         fields = "__all__"
+<<<<<<< HEAD
         widgets = {
             'nombre_pnf': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -35,6 +36,8 @@ class PnfForm(forms.ModelForm):
                 raise ValidationError('Ya existe un PNF con este nombre.')
         
         return nombre
+=======
+>>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
 
 class TrayectoForm(forms.ModelForm):
     class Meta:

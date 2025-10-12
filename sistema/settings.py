@@ -10,10 +10,15 @@ DEBUG = True
 # Secret key (use env var in prod)
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'dev-secret-key-change-me-please-1234567890')
 
+<<<<<<< HEAD
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
 ]
+=======
+ALLOWED_HOSTS ['sistemaucsproyecto.pythonanywhere.com', '127.0.0.1']
+
+>>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
 INSTALLED_APPS = [
     'jazzmin',
     'appsistem.apps.AppsistemConfig',
@@ -105,4 +110,8 @@ EMAIL_USE_SSL = False
 EMAIL_HOST_USER = 'moisestodoroki@gmail.com'
 EMAIL_HOST_PASSWORD = 'wavkbgzxflznsjdq'   # sin espacios
 DEFAULT_FROM_EMAIL = 'Sistema UCS <moisestodoroki@gmail.com>'
+<<<<<<< HEAD
 EMAIL_TIMEOUT = 20
+=======
+EMAIL_TIMEOUT = 20
+>>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4

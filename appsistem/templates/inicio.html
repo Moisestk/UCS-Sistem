@@ -100,8 +100,33 @@
         </div>
     </div>
 
+<<<<<<< HEAD
     <!-- Right Column intentionally left without Quick Actions -->
     <div class="order-1 lg:order-2"></div>
+=======
+    <!-- Right Column - Sidebar -->
+    <div class="order-1 lg:order-2">
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+            <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                    <i class="fas fa-bolt mr-2 text-ucs-red"></i>Acciones Rápidas
+                </h3>
+            </div>
+            <div class="p-4 sm:p-6 space-y-3">
+                <a href="{% url 'proyecto_detalle' latest.id %}" class="w-full bg-ucs-red text-white py-3 px-4 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center text-sm sm:text-base">
+                    <i class="fas fa-eye mr-2"></i>Ver Momentos
+                </a>
+                <a href="{% url 'editarproyectos' latest.id %}" class="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center text-sm sm:text-base">
+                    <i class="fas fa-edit mr-2"></i>Editar Datos
+                </a>
+                <a href="{% url 'misproyectos' %}" class="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center text-sm sm:text-base">
+                    <i class="fas fa-folder-open mr-2"></i>Mis Proyectos
+                </a>
+            </div>
+        </div>
+    </div>
+>>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
 </div>
 
 {% else %}

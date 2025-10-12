@@ -24,7 +24,10 @@ from appsistem.models import (
     Pnf, Trayecto, Proyecto, Seccion, Momento, MomentoVersion,
     Notification, Profile
 )
+<<<<<<< HEAD
 from appsistem.forms import PnfForm
+=======
+>>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
 
 # =========================
 # Utilidades
@@ -924,6 +927,7 @@ def user_update(request, user_id):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({'ok': True})
     messages.success(request, 'Usuario actualizado correctamente.')
+<<<<<<< HEAD
     return redirect('panel:users_list')
 
 # =========================
@@ -1011,3 +1015,6 @@ def pnf_delete(request, pk):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({'ok': True})
     return redirect('panel:pnfs_list')
+=======
+    return redirect('panel:users_list')
+>>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
