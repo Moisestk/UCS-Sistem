@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.contrib.auth.password_validation import validate_password
 from django.db.models import Q
 
-from .forms import ProyectoForm, RegistrationStep1Form, RegistrationStep2Form, LoginWithCaptchaForm
+from .forms import ProyectoForm, RegistrationStep1Form, RegistrationStep2Form, LoginWithCaptchaForm, validate_document_file
 from .models import Pnf, Trayecto, Proyecto, Seccion, Momento, MomentoVersion, Notification, Profile
 
 
@@ -134,7 +134,16 @@ def subir_proyecto(request):
     trayectos = list(Trayecto.objects.all())
     seccions = list(Seccion.objects.all())
 
+    # Debug: información del formulario
+    print(f"DEBUG SUBIR - Método: {request.method}")
+    print(f"DEBUG SUBIR - Form is_valid: {form.is_valid() if request.method == 'POST' else 'N/A'}")
+    if request.method == 'POST':
+        print(f"DEBUG SUBIR - Form errors: {form.errors}")
+        print(f"DEBUG SUBIR - Form data: {request.POST}")
+        print(f"DEBUG SUBIR - Files: {request.FILES}")
+
     if request.method == 'POST' and form.is_valid():
+        print("DEBUG SUBIR - Formulario válido, guardando proyecto...")
         profile_photo = request.FILES.get('profile_photo')
         if profile_photo:
             prof, _ = Profile.objects.get_or_create(user=request.user)
@@ -145,15 +154,18 @@ def subir_proyecto(request):
         if not getattr(proyecto, 'usuario_id', None):
             proyecto.usuario = request.user
         proyecto.save()
+        print(f"DEBUG SUBIR - Proyecto guardado con ID: {proyecto.id}")
         return redirect('proyecto_detalle', pk=proyecto.id)
 
     if request.method == 'POST':
+        print("DEBUG SUBIR - Formulario inválido, mostrando errores...")
         return render(request, 'subir.html', {
             'form': form, 'pnfs': pnfs, 'trayectos': trayectos, 'seccions': seccions
         })
 
+    print("DEBUG SUBIR - Cargando formulario inicial...")
     return render(request, 'subir.html', {
-        'pnfs': pnfs, 'trayectos': trayectos, 'seccions': seccions
+        'form': form, 'pnfs': pnfs, 'trayectos': trayectos, 'seccions': seccions
     })
 
 
@@ -165,19 +177,43 @@ def misproyectos(request):
 
 @login_required(login_url='/editar')
 def editar(request, id):
-    proyecto = get_object_or_404(Proyecto, id=id)
-    form = ProyectoForm(request.POST or None, request.FILES or None, instance=proyecto)
-    pnfs = list(Pnf.objects.all())
-    trayectos = list(Trayecto.objects.all())
-    seccions = list(Seccion.objects.all())
-    data = {'pnfs': pnfs, 'trayectos': trayectos, 'secciones': seccions, 'form': form}
+    try:
+        proyecto = get_object_or_404(Proyecto, id=id)
+        
+        # Verificar que el usuario sea el propietario del proyecto
+        if proyecto.usuario_id != request.user.id:
+            raise PermissionDenied
+        
+        # Crear formulario con instancia
+        form = ProyectoForm(request.POST or None, request.FILES or None, instance=proyecto)
+        
+        # Obtener datos para el formulario
+        pnfs = list(Pnf.objects.all())
+        trayectos = list(Trayecto.objects.all())
+        seccions = list(Seccion.objects.all())
+        
+        
+        data = {
+            'pnfs': pnfs, 
+            'trayectos': trayectos, 
+            'secciones': seccions, 
+            'form': form, 
+            'proyecto': proyecto
+        }
 
-    if request.method == 'POST' and form.is_valid():
-        form.save()
-        return redirect('/misproyectos')
-    if request.method == 'POST':
+        if request.method == 'POST':
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Proyecto actualizado correctamente.')
+                return redirect('misproyectos')
+            else:
+                messages.error(request, 'Por favor corrige los errores en el formulario.')
+        
         return render(request, 'editar.html', data)
-    return render(request, 'editar.html', data)
+        
+    except Exception as e:
+        messages.error(request, f'Error al cargar el proyecto: {str(e)}')
+        return redirect('misproyectos')
 
 
 @login_required(login_url='/login')
@@ -228,6 +264,13 @@ def momento_upload_version(request, momento_id):
 
     archivo = request.FILES.get('archivo')
     if not archivo:
+        return redirect('proyecto_detalle', pk=momento.proyecto_id)
+    
+    # Validar tipo de archivo
+    try:
+        validate_document_file(archivo)
+    except ValidationError as e:
+        messages.error(request, str(e))
         return redirect('proyecto_detalle', pk=momento.proyecto_id)
 
     MomentoVersion.objects.create(momento=momento, archivo=archivo, origen='ESTUDIANTE', subido_por=request.user)

@@ -2,14 +2,36 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
-from captcha.fields import CaptchaField
-from .models import Proyecto, Trayecto, Pnf, Seccion
+from django_recaptcha.fields import ReCaptchaField
+from django_recaptcha.widgets import ReCaptchaV2Checkbox
+from .models import Proyecto, Trayecto, Pnf, Seccion, Estado
+import os
+
+def validate_document_file(file):
+    """
+    Valida que el archivo sea PDF o DOCX
+    """
+    if not file:
+        return
+    
+    # Obtener la extensión del archivo
+    ext = os.path.splitext(file.name)[1].lower()
+    allowed_extensions = ['.pdf', '.docx']
+    
+    if ext not in allowed_extensions:
+        raise ValidationError(
+            'Solo se permiten archivos PDF (.pdf) y Word (.docx). '
+            f'El archivo seleccionado tiene extensión: {ext}'
+        )
+    
+    # Validar tamaño del archivo (máximo 10MB)
+    if file.size > 10 * 1024 * 1024:  # 10MB
+        raise ValidationError('El archivo no puede ser mayor a 10MB.')
 
 class PnfForm(forms.ModelForm):
     class Meta:
         model = Pnf
         fields = "__all__"
-<<<<<<< HEAD
         widgets = {
             'nombre_pnf': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -36,8 +58,6 @@ class PnfForm(forms.ModelForm):
                 raise ValidationError('Ya existe un PNF con este nombre.')
         
         return nombre
-=======
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
 
 class TrayectoForm(forms.ModelForm):
     class Meta:
@@ -53,6 +73,25 @@ class ProyectoForm(forms.ModelForm):
     class Meta:
         model = Proyecto
         exclude = ['fecha_subida']
+        widgets = {
+            'archivo': forms.FileInput(attrs={
+                'accept': '.pdf,.docx',
+                'class': 'form-control'
+            }),
+            'estado': forms.Select(attrs={
+                'class': 'form-control'
+            })
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Cargar solo estados activos
+        self.fields['estado'].queryset = Estado.objects.filter(activo=True).order_by('nombre')
+    
+    def clean_archivo(self):
+        archivo = self.cleaned_data.get('archivo')
+        validate_document_file(archivo)
+        return archivo
 
 # -------- Registro seguro (dos pasos) --------
 class RegistrationStep1Form(forms.Form):
@@ -61,7 +100,7 @@ class RegistrationStep1Form(forms.Form):
     email = forms.EmailField(label='Correo')
     password1 = forms.CharField(label='Contraseña', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Repetir contraseña', widget=forms.PasswordInput)
-    captcha = CaptchaField()
+    captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox())
 
     def clean(self):
         data = super().clean()
@@ -91,6 +130,7 @@ class RegistrationStep2Form(forms.Form):
         max_length=8,
     )
     photo = forms.ImageField(label='Foto de perfil', required=False)
+    captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox())
 
     def clean_username(self):
         username = (self.cleaned_data.get('username') or '').strip()
@@ -104,4 +144,4 @@ class RegistrationStep2Form(forms.Form):
 
 # -------- Login con captcha --------
 class LoginWithCaptchaForm(AuthenticationForm):
-    captcha = CaptchaField()
+    captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox())

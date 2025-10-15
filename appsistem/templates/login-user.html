@@ -6,10 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ingresar | Sistema de Registro de Proyectos UCS</title>
-<<<<<<< HEAD
     <link rel="icon" type="image/x-icon" href="{% static 'img/mini.ico' %}">
-=======
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
@@ -38,38 +35,6 @@
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         }
 
-        .captcha-box {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 8px;
-            flex-wrap: nowrap;
-        }
-
-        .captcha-box img {
-            height: 44px;
-            width: auto;
-            display: block;
-            border-radius: 6px;
-            border: 1px solid #e5e7eb;
-        }
-
-        .captcha-box input[name$="captcha_1"] {
-            height: 44px;
-            line-height: 44px;
-            padding: 0 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            width: 220px;
-            transition: all 0.3s ease;
-        }
-
-        .captcha-box input[name$="captcha_1"]:focus {
-            border-color: var(--ucs-red);
-            box-shadow: 0 0 0 3px rgba(206, 25, 25, 0.1);
-            outline: none;
-        }
 
         .icon-btn {
             position: absolute;
@@ -108,6 +73,27 @@
             border-color: var(--ucs-red);
             box-shadow: 0 0 0 3px rgba(206, 25, 25, 0.1);
             outline: none;
+        }
+
+        /* Ocultar mensaje rojo de reCAPTCHA de prueba */
+        .grecaptcha-badge {
+            visibility: hidden !important;
+        }
+        
+        /* Ocultar mensaje de prueba de reCAPTCHA */
+        iframe[src*="recaptcha"] {
+            filter: none !important;
+        }
+        
+        /* Ocultar texto de advertencia de reCAPTCHA */
+        div[style*="color: rgb(204, 0, 0)"] {
+            display: none !important;
+        }
+        
+        /* Ocultar cualquier mensaje rojo de reCAPTCHA */
+        .g-recaptcha div[style*="color: rgb(204, 0, 0)"],
+        .g-recaptcha div[style*="color: #cc0000"] {
+            display: none !important;
         }
 
         .btn-primary {
@@ -254,26 +240,19 @@
                     </div>
 
                     <!-- Captcha -->
-                    <div class="bg-yellow-50 rounded-xl p-6 border border-yellow-200">
+                    <div class="bg-blue-50 rounded-xl p-6 border border-blue-200">
                         <label class="block text-sm font-semibold text-gray-700 mb-4">
-                            <i class="fas fa-shield-alt mr-2 text-ucs-red"></i>Verificación de seguridad
+                            <i class="fas fa-shield-alt mr-2 text-blue-600"></i>Verificación de seguridad
                         </label>
-                        <div class="captcha-box p-3 bg-white border border-gray-300 rounded-lg shadow-sm inline-block">
+                        <div class="flex justify-center">
                             {{ form.captcha }}
-                            <button type="button" id="captchaRefreshLoginIcon" class="icon-btn" title="Recargar captcha"
-                                aria-label="Recargar captcha">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M3 12a9 9 0 1 0 3-6.708" />
-                                    <path d="M3 4v6h6" />
-                                </svg>
-                            </button>
                         </div>
-                        <div class="mt-3 text-sm text-gray-600">
-                            <i class="fas fa-lightbulb mr-2 text-yellow-500"></i>
-                            Escribe los caracteres tal como aparecen en la imagen.
+                        <div class="mt-3 text-sm text-gray-600 text-center">
+                            <i class="fas fa-info-circle mr-2 text-blue-500"></i>
+                            Marca la casilla "No soy un robot" para continuar
                         </div>
                         {% if form.captcha.errors %}
-                        <div class="mt-3 text-sm text-red-600 font-medium">
+                        <div class="mt-3 text-sm text-red-600 font-medium text-center">
                             <i class="fas fa-exclamation-circle mr-1"></i>{{ form.captcha.errors|striptags }}
                         </div>
                         {% endif %}
@@ -335,31 +314,6 @@
                 }
             })();
 
-        // Refrescar captcha en login
-        const refreshLoginIcon = document.getElementById('captchaRefreshLoginIcon');
-        if (refreshLoginIcon) {
-            refreshLoginIcon.addEventListener('click', async () => {
-                try {
-                    const res = await fetch('/captcha/refresh/', { cache: 'no-store' });
-                    const data = await res.json();
-
-                    const box = document.querySelector('.captcha-box');
-                    if (!box) return;
-
-                    const img = box.querySelector('img');
-                    const hidden = box.querySelector('input[name$="captcha_0"]');
-                    const text = box.querySelector('input[name$="captcha_1"]');
-
-                    if (img && hidden) {
-                        img.src = data.image_url;
-                        hidden.value = data.key;
-                        if (text) text.value = '';
-                    }
-                } catch (err) {
-                    console.error('Error refrescando captcha:', err);
-                }
-            });
-        }
 
         // Animaciones de entrada
         document.addEventListener('DOMContentLoaded', () => {
@@ -373,6 +327,29 @@
                     el.style.transform = 'translateY(0)';
                 }, index * 100);
             });
+
+            // Ocultar mensaje rojo de reCAPTCHA cuando aparezca
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'childList') {
+                        const redMessages = document.querySelectorAll('div[style*="color: rgb(204, 0, 0)"], div[style*="color: #cc0000"]');
+                        redMessages.forEach(msg => {
+                            if (msg.textContent.includes('testing purposes') || msg.textContent.includes('This reCAPTCHA is for testing')) {
+                                msg.style.display = 'none';
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Observar cambios en el contenedor de reCAPTCHA
+            const recaptchaContainer = document.querySelector('.g-recaptcha');
+            if (recaptchaContainer) {
+                observer.observe(recaptchaContainer, { childList: true, subtree: true });
+            }
+
+            // También observar el body por si el mensaje aparece fuera del contenedor
+            observer.observe(document.body, { childList: true, subtree: true });
         });
 
         // Efecto de focus mejorado

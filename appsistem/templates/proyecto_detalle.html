@@ -1,4 +1,5 @@
 {% extends 'index.html' %}
+{% load static %}
 {% block title %}Detalle de Proyecto | SRP{% endblock %}
 {% block breadcrumb %}
   <a href="/misproyectos/" class="text-gray-500 hover:text-ucs-red transition-colors">Mis Proyectos</a>
@@ -88,15 +89,16 @@
                         <form method="post" enctype="multipart/form-data" action="{% url 'momento_upload' m.id %}" 
                               class="bg-green-50 border border-green-200 rounded-lg p-4">
                             {% csrf_token %}
-                            <div class="flex flex-col sm:flex-row gap-3">
-                                <div class="flex-1">
-                                    <input type="file" name="archivo" required
-                                           class="block w-full text-sm file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-ucs-red file:text-white hover:file:bg-red-700 file:transition-colors border border-gray-300 rounded-lg" />
+                            <div class="space-y-3">
+                                <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                                    <input type="file" name="archivo" required accept=".pdf,.docx"
+                                           class="flex-1 text-sm file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-ucs-red file:text-white hover:file:bg-red-700 file:transition-colors border border-gray-300 rounded-lg h-10" />
+                                    <button type="submit" 
+                                            class="inline-flex items-center justify-center px-6 py-2 bg-ucs-red text-white rounded-lg hover:bg-red-700 transition-colors font-medium h-10 w-full sm:w-auto">
+                                        <i class="fas fa-upload mr-2"></i>Subir Archivo
+                                    </button>
                                 </div>
-                                <button type="submit" 
-                                        class="inline-flex items-center px-6 py-2 bg-ucs-red text-white rounded-lg hover:bg-red-700 transition-colors font-medium">
-                                    <i class="fas fa-upload mr-2"></i>Subir Archivo
-                                </button>
+                                <p class="text-xs text-gray-500">Formatos permitidos: PDF (.pdf), Word (.docx) - Máximo 10MB</p>
                             </div>
                         </form>
                     {% else %}
@@ -268,4 +270,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/file-validation.js' %}"></script>
 {% endblock %}

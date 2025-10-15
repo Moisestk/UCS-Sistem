@@ -5,6 +5,29 @@ from django.utils import timezone
 from django.urls import reverse
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.exceptions import ValidationError
+import os
+
+def validate_document_file_model(value):
+    """
+    Validador para archivos de documentos (PDF y DOCX) a nivel de modelo
+    """
+    if not value:
+        return
+    
+    # Obtener la extensión del archivo
+    ext = os.path.splitext(value.name)[1].lower()
+    allowed_extensions = ['.pdf', '.docx']
+    
+    if ext not in allowed_extensions:
+        raise ValidationError(
+            'Solo se permiten archivos PDF (.pdf) y Word (.docx). '
+            f'El archivo seleccionado tiene extensión: {ext}'
+        )
+    
+    # Validar tamaño del archivo (máximo 10MB)
+    if value.size > 10 * 1024 * 1024:  # 10MB
+        raise ValidationError('El archivo no puede ser mayor a 10MB.')
 
 class Pnf(models.Model):
     nombre_pnf = models.CharField(max_length=100)
@@ -26,9 +49,23 @@ class Seccion(models.Model):
     def __str__(self):
         return self.seccion_estudiante
 
+class Estado(models.Model):
+    """Modelo para los estados de Venezuela"""
+    nombre = models.CharField(max_length=50, unique=True)
+    codigo = models.CharField(max_length=10, unique=True, null=True, blank=True)
+    activo = models.BooleanField(default=True)
+    
+    class Meta:
+        verbose_name = "Estado"
+        verbose_name_plural = "Estados"
+        ordering = ['nombre']
+    
+    def __str__(self):
+        return self.nombre
+
 
 class Proyecto(models.Model):
-    ESTADOS = (
+    ESTADOS_REVISION = (
         ("PENDIENTE", "Pendiente"),
         ("EN_REVISION", "En revisión"),
         ("APROBADO", "Aprobado"),
@@ -46,15 +83,19 @@ class Proyecto(models.Model):
     palabras_clave = models.TextField()
     autores = models.TextField()
     tutor_metodologico = models.TextField(null=True)
-    estado = models.TextField(null=True, blank=True)
+    estado = models.ForeignKey(Estado, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Estado de Venezuela")
+    estado_revision = models.CharField(max_length=20, choices=ESTADOS_REVISION, default='PENDIENTE', verbose_name="Estado de Revisión")
     nota = models.PositiveSmallIntegerField(null=True, blank=True)
     municipio = models.TextField(null=True)
     parroquia = models.TextField(null=True)
     nombre_comunidad = models.TextField(null=True)
     fecha_creacion = models.DateField(default=date.today)
     fecha_subido = models.DateField(auto_now_add=True)
-    archivo = models.FileField(upload_to="proyectos/", blank=True, null=True)
+    archivo = models.FileField(upload_to="proyectos/", blank=True, null=True, validators=[validate_document_file_model])
     revisado = models.BooleanField(default=False, null=True)
+    is_trashed = models.BooleanField(default=False, verbose_name="En Papelera")
+    trashed_at = models.DateTimeField(null=True, blank=True, verbose_name="Fecha de Papelera")
+    trashed_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='proyectos_enviados_papelera', verbose_name="Enviado a Papelera por")
 
     def __str__(self):
         return self.titulo
@@ -92,7 +133,7 @@ class Momento(models.Model):
 
 class MomentoVersion(models.Model):
     momento = models.ForeignKey(Momento, on_delete=models.CASCADE, related_name='versions')
-    archivo = models.FileField(upload_to="momentos/")
+    archivo = models.FileField(upload_to="momentos/", validators=[validate_document_file_model])
     version = models.PositiveIntegerField(default=1)
     etiqueta = models.CharField(max_length=20)
     created_at = models.DateTimeField(auto_now_add=True)

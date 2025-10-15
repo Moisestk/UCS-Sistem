@@ -1,0 +1,10 @@
+# Configuración de reCAPTCHA
+# Obtén tus claves reales en: https://www.google.com/recaptcha/admin
+
+# Para desarrollo local (localhost)
+RECAPTCHA_PUBLIC_KEY=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
+RECAPTCHA_PRIVATE_KEY=6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
+
+# Para producción (reemplazar con tus claves reales)
+# RECAPTCHA_PUBLIC_KEY=6Lfxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# RECAPTCHA_PRIVATE_KEY=6Lfxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

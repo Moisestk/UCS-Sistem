@@ -10,27 +10,13 @@ DEBUG = True
 # Secret key (use env var in prod)
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'dev-secret-key-change-me-please-1234567890')
 
-<<<<<<< HEAD
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
 ]
-=======
-ALLOWED_HOSTS ['sistemaucsproyecto.pythonanywhere.com', '127.0.0.1']
 
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
 INSTALLED_APPS = [
-    'jazzmin',
-    'appsistem.apps.AppsistemConfig',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-]
-INSTALLED_APPS = [
-    'jazzmin',
+    # 'jazzmin',  # Comentado temporalmente
     'appsistem.apps.AppsistemConfig',
     'panel',
 
@@ -41,7 +27,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'captcha',
+    'import_export',
+    'django_recaptcha',
 ]
 
 # Required middleware for sessions, auth, and messages
@@ -54,6 +41,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Agregar middleware personalizado para desarrollo
+if DEBUG:
+    MIDDLEWARE.append('appsistem.middleware.RecaptchaDevMiddleware')
 
 ROOT_URLCONF = 'sistema.urls'
 
@@ -110,8 +101,46 @@ EMAIL_USE_SSL = False
 EMAIL_HOST_USER = 'moisestodoroki@gmail.com'
 EMAIL_HOST_PASSWORD = 'wavkbgzxflznsjdq'   # sin espacios
 DEFAULT_FROM_EMAIL = 'Sistema UCS <moisestodoroki@gmail.com>'
-<<<<<<< HEAD
 EMAIL_TIMEOUT = 20
-=======
-EMAIL_TIMEOUT = 20
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
+
+# reCAPTCHA Configuration
+import os
+
+# Configuración por defecto (será sobrescrita en DEBUG)
+RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY', '6Lfxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')  # Reemplazar con tu clave real
+RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY', '6Lfxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')  # Reemplazar con tu clave real
+
+# En desarrollo, ignorar variables de entorno y usar configuración local
+if DEBUG:
+    # Forzar configuración local (ignorar variables de entorno)
+    RECAPTCHA_PUBLIC_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
+    RECAPTCHA_PRIVATE_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
+
+# Configuración de reCAPTCHA
+RECAPTCHA_DOMAIN = 'www.google.com'
+RECAPTCHA_DEFAULT_ACTION = 'generic'
+RECAPTCHA_SCORE_THRESHOLD = 0.5
+RECAPTCHA_VERIFY_REQUEST_TIMEOUT = 10
+
+# Configuración robusta para desarrollo local
+if DEBUG:
+    # Configuración específica para desarrollo local
+    RECAPTCHA_TESTING = True
+    RECAPTCHA_DOMAIN = 'www.google.com'
+    RECAPTCHA_VERIFY_REQUEST_TIMEOUT = 10
+    
+    # Configuración adicional para evitar mensajes de prueba
+    RECAPTCHA_DISABLE = False
+    RECAPTCHA_USE_SSL = True
+    
+    print("MODO DESARROLLO: reCAPTCHA configurado para localhost")
+    print(f"   Clave Publica: {RECAPTCHA_PUBLIC_KEY}")
+    print(f"   Testing Mode: {RECAPTCHA_TESTING}")
+
+# Silenciar TODAS las advertencias de reCAPTCHA
+SILENCED_SYSTEM_CHECKS = [
+    'captcha.recaptcha_test_key_error',
+    'django_recaptcha.recaptcha_test_key_error',
+    'captcha.recaptcha_test_key_warning',
+    'django_recaptcha.recaptcha_test_key_warning'
+]

@@ -48,13 +48,16 @@ urlpatterns = [
     path('notificaciones/leer_todas/', panel_access(panel_views.notifications_mark_all_read), name='notifications_mark_all_read'),
     path('notificaciones/<int:pk>/marcar/', panel_access(panel_views.notification_mark_read), name='notification_mark_read'),
     path('perfil/', panel_access(panel_views.admin_profile), name='profile'),
-<<<<<<< HEAD
     
     # Gestión de PNFs
     path('pnfs/', admin_only(panel_views.pnfs_list), name='pnfs_list'),
     path('pnfs/crear/', admin_only(panel_views.pnf_create), name='pnf_create'),
     path('pnfs/<int:pk>/editar/', admin_only(panel_views.pnf_edit), name='pnf_edit'),
     path('pnfs/<int:pk>/eliminar/', admin_only(panel_views.pnf_delete), name='pnf_delete'),
-=======
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
+    
+    # Papelera de Proyectos
+    path('papelera/', admin_only(panel_views.trash_list), name='trash_list'),
+    path('proyectos/<int:proyecto_id>/enviar-papelera/', admin_only(panel_views.send_to_trash), name='send_to_trash'),
+    path('proyectos/<int:proyecto_id>/restaurar/', admin_only(panel_views.restore_from_trash), name='restore_from_trash'),
+    path('proyectos/<int:proyecto_id>/eliminar-permanentemente/', admin_only(panel_views.permanent_delete), name='permanent_delete'),
 ]

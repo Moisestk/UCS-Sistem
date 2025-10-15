@@ -1,25 +1,17 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
-<<<<<<< HEAD
-
-=======
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Registro de Proyectos UCS</title>
-<<<<<<< HEAD
     <link rel="icon" type="image/x-icon" href="{% static 'img/mini.ico' %}">
-=======
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         /* Custom CSS for UCS Project Registration System */
 
         /* Custom animations and transitions */
-<<<<<<< HEAD
         @keyframes slideInFromTop {
             0% {
                 transform: translateY(-100%);
@@ -350,96 +342,6 @@
         .lazy.loaded {
             opacity: 1;
         }
-=======
-        @keyframes slideInFromTop { 0% { transform: translateY(-100%); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
-        @keyframes slideInFromLeft { 0% { transform: translateX(-100%); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
-        @keyframes slideInFromRight { 0% { transform: translateX(100%); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
-        @keyframes fadeInScale { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-
-        /* Custom utility classes */
-        .animate-slide-in-top { animation: slideInFromTop 0.8s ease-out; }
-        .animate-slide-in-left { animation: slideInFromLeft 0.8s ease-out; }
-        .animate-slide-in-right { animation: slideInFromRight 0.8s ease-out; }
-        .animate-fade-in-scale { animation: fadeInScale 0.6s ease-out; }
-
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #DC2626; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #1d4ed8; }
-
-        /* Smooth scrolling */
-        html { scroll-behavior: smooth; }
-
-        /* Custom focus styles */
-        button:focus, a:focus { outline: 2px solid #DC2626; outline-offset: 2px; }
-
-        /* Hover effects */
-        .hover-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .hover-lift:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); }
-
-        /* Gradients */
-        .gradient-ucs { background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%); }
-        .gradient-success { background: linear-gradient(135deg, #059669 0%, #10b981 100%); }
-        .gradient-danger { background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%); }
-        .gradient-ucs-blue { background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%); }
-        .gradient-ucs-yellow { background: linear-gradient(135deg, #FCD34D 0%, #FDE047 100%); }
-
-        /* Cards */
-        .card-hover { transition: all 0.3s ease; border: 1px solid transparent; }
-        .card-hover:hover { border-color: #DC2626; box-shadow: 0 20px 40px rgba(220, 38, 38, 0.1); }
-
-        /* Buttons */
-        .btn-primary { background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%); transition: all 0.3s ease; position: relative; overflow: hidden; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(220, 38, 38, 0.3); }
-        .btn-primary:active { transform: translateY(0); }
-        .btn-ucs-blue { background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%); transition: all 0.3s ease; position: relative; overflow: hidden; }
-        .btn-ucs-blue:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(30, 64, 175, 0.3); }
-        .btn-ucs-yellow { background: linear-gradient(135deg, #FCD34D 0%, #FDE047 100%); color: #000000; transition: all 0.3s ease; position: relative; overflow: hidden; }
-        .btn-ucs-yellow:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(252, 211, 77, 0.3); }
-
-        /* Forms */
-        .form-input { transition: all 0.3s ease; border: 2px solid #e5e7eb; }
-        .form-input:focus { border-color: #DC2626; box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1); }
-
-        /* Spinner */
-        .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #DC2626; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Mobile menu animation */
-        .mobile-menu-enter { animation: slideInFromTop 0.3s ease-out; }
-
-        /* Text selection */
-        ::selection { background-color: #DC2626; color: white; }
-
-        /* Print */
-        @media print { .no-print { display: none !important; } body { background: white !important; color: black !important; } }
-
-        /* Responsive utils */
-        @media (max-width: 640px) { .mobile-text-center { text-align: center; } .mobile-full-width { width: 100%; } }
-
-        /* Accessibility */
-        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-        .focus-visible:focus { outline: 2px solid #DC2626; outline-offset: 2px; }
-
-        /* High contrast */
-        @media (prefers-contrast: high) { .text-gray-600 { color: #000000 !important; } .bg-gray-50 { background-color: #ffffff !important; } }
-
-        /* Reduced motion */
-        @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
-
-        /* Dark mode (future) */
-        @media (prefers-color-scheme: dark) { .dark-mode { background-color: #1f2937; color: #f9fafb; } }
-
-        .animate-fade-in { animation: fadeInUp 0.6s ease-out forwards; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-        .ripple { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.6); transform: scale(0); animation: ripple-animation 0.6s linear; pointer-events: none; }
-        @keyframes ripple-animation { to { transform: scale(4); opacity: 0; } }
-
-        .lazy { opacity: 0; transition: opacity 0.3s; }
-        .lazy.loaded { opacity: 1; }
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
     </style>
     <script>
         tailwind.config = {
@@ -458,10 +360,6 @@
         }
     </script>
 </head>
-<<<<<<< HEAD
-
-=======
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
 <body class="bg-gray-50">
     <!-- Navigation -->
     <nav class="bg-white shadow-lg sticky top-0 z-50">
@@ -470,14 +368,7 @@
                 <!-- Logo -->
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-<<<<<<< HEAD
-                        <img class="h-12 w-auto"
-                            src="https://upload.wikimedia.org/wikipedia/commons/7/74/Logo_de_la_Universidad_Ciencias_de_la_Salud.png"
-                            alt="UCS Logo"
-                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-=======
                         <img class="h-12 w-auto" src="https://upload.wikimedia.org/wikipedia/commons/7/74/Logo_de_la_Universidad_Ciencias_de_la_Salud.png" alt="UCS Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                         <div class="hidden items-center">
                             <i class="fas fa-graduation-cap text-ucs-red text-2xl"></i>
                             <div class="ml-3">
@@ -490,37 +381,16 @@
 
                 <!-- Desktop Navigation -->
                 <div class="hidden md:flex items-center space-x-6">
-<<<<<<< HEAD
-                    <a href="#inicio"
-                        class="text-gray-900 hover:text-ucs-red px-3 py-2 rounded-md text-sm font-medium transition duration-300">Inicio</a>
-                    <a href="#proceso"
-                        class="text-gray-600 hover:text-ucs-red px-3 py-2 rounded-md text-sm font-medium transition duration-300">Proceso</a>
-                    <a href="#sobre-ucs"
-                        class="text-gray-600 hover:text-ucs-red px-3 py-2 rounded-md text-sm font-medium transition duration-300">Sobre
-                        UCS</a>
-                    <a href="{% url 'login' %}"
-                        class="bg-ucs-blue text-ucs-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition duration-300">Acceso
-                        Estudiantes</a>
-                    <a href="/panel/login/"
-                        class="border-2 border-ucs-red text-ucs-red px-4 py-2 rounded-lg text-sm font-semibold hover:bg-ucs-red hover:text-ucs-white transition duration-300">Acceso
-                        Administrador</a>
-=======
                     <a href="#inicio" class="text-gray-900 hover:text-ucs-red px-3 py-2 rounded-md text-sm font-medium transition duration-300">Inicio</a>
                     <a href="#proceso" class="text-gray-600 hover:text-ucs-red px-3 py-2 rounded-md text-sm font-medium transition duration-300">Proceso</a>
                     <a href="#sobre-ucs" class="text-gray-600 hover:text-ucs-red px-3 py-2 rounded-md text-sm font-medium transition duration-300">Sobre UCS</a>
                     <a href="{% url 'login' %}" class="bg-ucs-blue text-ucs-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition duration-300">Acceso Estudiantes</a>
                     <a href="/panel/login/" class="border-2 border-ucs-red text-ucs-red px-4 py-2 rounded-lg text-sm font-semibold hover:bg-ucs-red hover:text-ucs-white transition duration-300">Acceso Administrador</a>
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                 </div>
 
                 <!-- Mobile menu button -->
                 <div class="md:hidden">
-<<<<<<< HEAD
-                    <button id="mobile-menu-button"
-                        class="text-gray-600 hover:text-ucs-red focus:outline-none focus:text-ucs-red transition duration-300">
-=======
                     <button id="mobile-menu-button" class="text-gray-600 hover:text-ucs-red focus:outline-none focus:text-ucs-red transition duration-300">
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                         <i class="fas fa-bars text-xl"></i>
                     </button>
                 </div>
@@ -532,31 +402,15 @@
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
                 <a href="#inicio" class="text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Inicio</a>
                 <a href="#proceso" class="text-gray-600 block px-3 py-2 rounded-md text-base font-medium">Proceso</a>
-<<<<<<< HEAD
-                <a href="#sobre-ucs" class="text-gray-600 block px-3 py-2 rounded-md text-base font-medium">Sobre
-                    UCS</a>
-                <a href="{% url 'login' %}"
-                    class="bg-ucs-blue text-ucs-white block px-3 py-2 rounded-md text-base font-medium mt-2">Acceso
-                    Estudiantes</a>
-                <a href="/panel/login/"
-                    class="border-2 border-ucs-red text-ucs-red block px-3 py-2 rounded-md text-base font-medium mt-2">Acceso
-                    Administrador</a>
-=======
                 <a href="#sobre-ucs" class="text-gray-600 block px-3 py-2 rounded-md text-base font-medium">Sobre UCS</a>
                 <a href="{% url 'login' %}" class="bg-ucs-blue text-ucs-white block px-3 py-2 rounded-md text-base font-medium mt-2">Acceso Estudiantes</a>
                 <a href="/panel/login/" class="border-2 border-ucs-red text-ucs-red block px-3 py-2 rounded-md text-base font-medium mt-2">Acceso Administrador</a>
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-<<<<<<< HEAD
-    <section id="inicio" class="relative bg-cover bg-center bg-no-repeat text-ucs-white py-40"
-        style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://lh4.googleusercontent.com/proxy/XFICZkjlNgHmYKP7Ejn16wcG0OE4f8sltz3oLfSSLt_j0h-w-3kOgL9Ay-5T7dZUPQKNAC5CD16o6UFi3crG1l61KRptRSqeujCKYYcZEJ7A8g5YLhq_k6HotXvyDpiYF5EjuT_D9xxZcXaviYveLqqC-DHsWNc');">
-=======
     <section id="inicio" class="relative bg-cover bg-center bg-no-repeat text-ucs-white py-40" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://lh4.googleusercontent.com/proxy/XFICZkjlNgHmYKP7Ejn16wcG0OE4f8sltz3oLfSSLt_j0h-w-3kOgL9Ay-5T7dZUPQKNAC5CD16o6UFi3crG1l61KRptRSqeujCKYYcZEJ7A8g5YLhq_k6HotXvyDpiYF5EjuT_D9xxZcXaviYveLqqC-DHsWNc');">
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center">
                 <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
@@ -569,21 +423,11 @@
                     Tu Proyecto, Nuestro Futuro: Bienvenido al Sistema Digital
                 </p>
                 <div class="flex justify-center gap-3">
-<<<<<<< HEAD
-                    <a href="{% url 'login' %}"
-                        class="bg-ucs-yellow text-ucs-black px-8 py-4 rounded-lg text-lg font-semibold hover:bg-yellow-400 transition duration-300 transform hover:scale-105 shadow-lg inline-flex items-center">
-                        <i class="fas fa-sign-in-alt mr-2"></i>
-                        Acceso Estudiantes
-                    </a>
-                    <a href="/panel/login/"
-                        class="bg-ucs-blue text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition duration-300 transform hover:scale-105 shadow-lg inline-flex items-center">
-=======
                     <a href="{% url 'login' %}" class="bg-ucs-yellow text-ucs-black px-8 py-4 rounded-lg text-lg font-semibold hover:bg-yellow-400 transition duration-300 transform hover:scale-105 shadow-lg inline-flex items-center">
                         <i class="fas fa-sign-in-alt mr-2"></i>
                         Acceso Estudiantes
                     </a>
                     <a href="/panel/login/" class="bg-ucs-blue text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition duration-300 transform hover:scale-105 shadow-lg inline-flex items-center">
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                         <i class="fas fa-user-shield mr-2"></i>
                         Acceso Administrador
                     </a>
@@ -600,31 +444,16 @@
                     Estudiante de la Universidad de las Ciencias de la Salud
                 </h2>
                 <p class="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-<<<<<<< HEAD
-                    "Hugo Chávez Frías" (UCS), este es el portal diseñado para ti. La UCS, creada en 2014 como parte
-                    esencial del Sistema Público Nacional de Salud (SPNS), tiene la misión de formar profesionales que
-                    promuevan la Salud Colectiva y el Buen Vivir del pueblo venezolano.
-=======
                     "Hugo Chávez Frías" (UCS), este es el portal diseñado para ti. La UCS, creada en 2014 como parte esencial del Sistema Público Nacional de Salud (SPNS), tiene la misión de formar profesionales que promuevan la Salud Colectiva y el Buen Vivir del pueblo venezolano.
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                 </p>
             </div>
 
             <div class="bg-gradient-to-r from-ucs-green to-green-600 rounded-2xl p-8 mb-16 text-ucs-white">
                 <div class="text-center">
                     <i class="fas fa-heartbeat text-5xl mb-4"></i>
-<<<<<<< HEAD
-                    <h3 class="text-2xl font-bold mb-4">¡Tu proyecto de investigación es clave para la salud integral de
-                        la nación!</h3>
-                    <p class="text-lg">
-                        Ahora, tu investigación y propuestas son más fáciles de gestionar que nunca. Utiliza esta
-                        plataforma para ingresar formalmente tu proyecto y contribuir directamente a la transformación
-                        de la salud en el país.
-=======
                     <h3 class="text-2xl font-bold mb-4">¡Tu proyecto de investigación es clave para la salud integral de la nación!</h3>
                     <p class="text-lg">
                         Ahora, tu investigación y propuestas son más fáciles de gestionar que nunca. Utiliza esta plataforma para ingresar formalmente tu proyecto y contribuir directamente a la transformación de la salud en el país.
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                     </p>
                 </div>
             </div>
@@ -645,80 +474,40 @@
 
             <div class="grid md:grid-cols-3 gap-8">
                 <!-- Step 1 -->
-<<<<<<< HEAD
-                <div
-                    class="bg-ucs-white rounded-xl shadow-lg p-8 hover:shadow-xl transition duration-300 transform hover:-translate-y-2">
-                    <div class="text-center">
-                        <div
-                            class="bg-ucs-red text-ucs-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">
-=======
                 <div class="bg-ucs-white rounded-xl shadow-lg p-8 hover:shadow-xl transition duration-300 transform hover:-translate-y-2">
                     <div class="text-center">
                         <div class="bg-ucs-red text-ucs-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                             1
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 mb-4">Registro y Acceso al Perfil</h3>
                         <p class="text-gray-600 leading-relaxed">
-<<<<<<< HEAD
-                            Crea tu cuenta de usuario con tus datos de estudiante y logéate para acceder al sistema. Es
-                            tu puerta de entrada personalizada.
-=======
                             Crea tu cuenta de usuario con tus datos de estudiante y logéate para acceder al sistema. Es tu puerta de entrada personalizada.
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                         </p>
                     </div>
                 </div>
 
                 <!-- Step 2 -->
-<<<<<<< HEAD
-                <div
-                    class="bg-ucs-white rounded-xl shadow-lg p-8 hover:shadow-xl transition duration-300 transform hover:-translate-y-2">
-                    <div class="text-center">
-                        <div
-                            class="bg-ucs-blue text-ucs-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">
-=======
                 <div class="bg-ucs-white rounded-xl shadow-lg p-8 hover:shadow-xl transition duration-300 transform hover:-translate-y-2">
                     <div class="text-center">
                         <div class="bg-ucs-blue text-ucs-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                             2
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 mb-4">Carga de Documentos y Datos</h3>
                         <p class="text-gray-600 leading-relaxed">
-<<<<<<< HEAD
-                            Llena el formulario con la información completa de tu proyecto y adjunta los archivos
-                            solicitados (protocolo, anexos, etc.). Asegúrate de que todo esté en orden.
-=======
                             Llena el formulario con la información completa de tu proyecto y adjunta los archivos solicitados (protocolo, anexos, etc.). Asegúrate de que todo esté en orden.
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                         </p>
                     </div>
                 </div>
 
                 <!-- Step 3 -->
-<<<<<<< HEAD
-                <div
-                    class="bg-ucs-white rounded-xl shadow-lg p-8 hover:shadow-xl transition duration-300 transform hover:-translate-y-2">
-                    <div class="text-center">
-                        <div
-                            class="bg-ucs-green text-ucs-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">
-=======
                 <div class="bg-ucs-white rounded-xl shadow-lg p-8 hover:shadow-xl transition duration-300 transform hover:-translate-y-2">
                     <div class="text-center">
                         <div class="bg-ucs-green text-ucs-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                             3
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 mb-4">Envío y Seguimiento</h3>
                         <p class="text-gray-600 leading-relaxed">
-<<<<<<< HEAD
-                            Envía el proyecto final. Quedará guardado en el sistema y la Coordinación de Proyectos
-                            iniciará el proceso de revisión, notificándote cualquier actualización o solicitud de
-                            corrección.
-=======
                             Envía el proyecto final. Quedará guardado en el sistema y la Coordinación de Proyectos iniciará el proceso de revisión, notificándote cualquier actualización o solicitud de corrección.
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                         </p>
                     </div>
                 </div>
@@ -735,12 +524,7 @@
                     La UCS en Cifras y Enfoque
                 </h2>
                 <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-<<<<<<< HEAD
-                    Como futuro profesional egresado de carreras como Medicina, Bioanálisis, Enfermería, Farmacia, o
-                    Nutrición, tu trabajo se enmarca en una institución con una visión clara.
-=======
                     Como futuro profesional egresado de carreras como Medicina, Bioanálisis, Enfermería, Farmacia, o Nutrición, tu trabajo se enmarca en una institución con una visión clara.
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                 </p>
             </div>
 
@@ -756,21 +540,11 @@
                 <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 text-center">
                     <i class="fas fa-graduation-cap text-ucs-green text-3xl mb-4"></i>
                     <h3 class="text-xl font-bold text-ucs-black mb-2">Modelo Educativo</h3>
-<<<<<<< HEAD
-                    <p class="text-gray-600">Enfoque integral alineado con los Programas Nacionales de Formación (PNF).
-                    </p>
-                </div>
-
-                <!-- Purpose -->
-                <div
-                    class="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6 text-center md:col-span-2 lg:col-span-1">
-=======
                     <p class="text-gray-600">Enfoque integral alineado con los Programas Nacionales de Formación (PNF).</p>
                 </div>
 
                 <!-- Purpose -->
                 <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6 text-center md:col-span-2 lg:col-span-1">
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                     <i class="fas fa-heart text-ucs-red text-3xl mb-4"></i>
                     <h3 class="text-xl font-bold text-ucs-black mb-2">Propósito</h3>
                     <p class="text-gray-600">Formar profesionales con alta capacidad científica y técnica.</p>
@@ -780,12 +554,7 @@
             <div class="bg-gradient-to-r from-ucs-red to-red-600 rounded-2xl p-8 text-ucs-white text-center">
                 <h3 class="text-2xl font-bold mb-4">¿Listo para comenzar?</h3>
                 <p class="text-lg mb-6">Regístrate y sube tu proyecto hoy.</p>
-<<<<<<< HEAD
-                <a href="{% url 'register' %}"
-                    class="bg-ucs-white text-ucs-red px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition duration-300 transform hover:scale-105 inline-flex items-center">
-=======
                 <a href="{% url 'register' %}" class="bg-ucs-white text-ucs-red px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition duration-300 transform hover:scale-105 inline-flex items-center">
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                     <i class="fas fa-user-plus mr-2"></i>
                     Registrarse Ahora
                 </a>
@@ -806,197 +575,93 @@
             </div>
 
             <div class="space-y-4">
-                <!-- FAQ items (sin cambios) -->
+                <!-- FAQ items -->
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-<<<<<<< HEAD
-                    <button
-                        class="faq-toggle w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition duration-300 focus:outline-none"
-                        data-target="faq-1">
-                        <div class="flex items-center">
-                            <span
-                                class="bg-ucs-red text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4">1</span>
-=======
                     <button class="faq-toggle w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition duration-300 focus:outline-none" data-target="faq-1">
                         <div class="flex items-center">
                             <span class="bg-ucs-red text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4">1</span>
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                             <h3 class="text-xl font-bold text-ucs-red">¿Quiénes pueden registrarse en este sistema?</h3>
                         </div>
                         <i class="fas fa-chevron-down text-ucs-red text-xl transition-transform duration-300"></i>
                     </button>
                     <div id="faq-1" class="faq-content hidden px-6 pb-6">
                         <p class="text-gray-700 leading-relaxed ml-12">
-<<<<<<< HEAD
-                            Este portal está destinado exclusivamente a estudiantes de la Universidad de las Ciencias de
-                            la Salud "Hugo Chávez Frías" (UCS) que necesiten cargar y gestionar sus trabajos especiales
-                            de grado, proyectos de investigación formativa, o proyectos de servicio comunitario como
-                            requisito académico.
-=======
                             Este portal está destinado exclusivamente a estudiantes de la Universidad de las Ciencias de la Salud "Hugo Chávez Frías" (UCS) que necesiten cargar y gestionar sus trabajos especiales de grado, proyectos de investigación formativa, o proyectos de servicio comunitario como requisito académico.
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                         </p>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-<<<<<<< HEAD
-                    <button
-                        class="faq-toggle w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition duration-300 focus:outline-none"
-                        data-target="faq-2">
-                        <div class="flex items-center">
-                            <span
-                                class="bg-ucs-red text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4">2</span>
-                            <h3 class="text-xl font-bold text-ucs-red">¿Qué documentos debo tener listos antes de subir
-                                mi proyecto?</h3>
-=======
                     <button class="faq-toggle w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition duration-300 focus:outline-none" data-target="faq-2">
                         <div class="flex items-center">
                             <span class="bg-ucs-red text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4">2</span>
                             <h3 class="text-xl font-bold text-ucs-red">¿Qué documentos debo tener listos antes de subir mi proyecto?</h3>
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                         </div>
                         <i class="fas fa-chevron-down text-ucs-red text-xl transition-transform duration-300"></i>
                     </button>
                     <div id="faq-2" class="faq-content hidden px-6 pb-6">
                         <p class="text-gray-700 leading-relaxed ml-12">
-<<<<<<< HEAD
-                            Generalmente, debes tener en formato Word o PDF el Protocolo de Proyecto (completo y
-                            debidamente estructurado) y las Cartas de Aval o Aprobación requeridas por tu coordinación
-                            académica. Revisa siempre la sección de la plataforma para verificar los formatos y anexos
-                            obligatorios.
-=======
                             Generalmente, debes tener en formato Word o PDF el Protocolo de Proyecto (completo y debidamente estructurado) y las Cartas de Aval o Aprobación requeridas por tu coordinación académica. Revisa siempre la sección de la plataforma para verificar los formatos y anexos obligatorios.
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                         </p>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-<<<<<<< HEAD
-                    <button
-                        class="faq-toggle w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition duration-300 focus:outline-none"
-                        data-target="faq-3">
-                        <div class="flex items-center">
-                            <span
-                                class="bg-ucs-red text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4">3</span>
-                            <h3 class="text-xl font-bold text-ucs-red">¿Cómo sé si mi proyecto se cargó correctamente?
-                            </h3>
-=======
                     <button class="faq-toggle w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition duration-300 focus:outline-none" data-target="faq-3">
                         <div class="flex items-center">
                             <span class="bg-ucs-red text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4">3</span>
                             <h3 class="text-xl font-bold text-ucs-red">¿Cómo sé si mi proyecto se cargó correctamente?</h3>
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                         </div>
                         <i class="fas fa-chevron-down text-ucs-red text-xl transition-transform duration-300"></i>
                     </button>
                     <div id="faq-3" class="faq-content hidden px-6 pb-6">
                         <p class="text-gray-700 leading-relaxed ml-12">
-<<<<<<< HEAD
-                            Una vez que completes el formulario y hagas clic en "Enviar", el sistema te mostrará un
-                            mensaje de confirmación exitosa. El estatus de tu proyecto en tu perfil cambiará
-                            inmediatamente a "Pendiente de Revisión".
-=======
                             Una vez que completes el formulario y hagas clic en "Enviar", el sistema te mostrará un mensaje de confirmación exitosa. El estatus de tu proyecto en tu perfil cambiará inmediatamente a "Pendiente de Revisión".
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                         </p>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-<<<<<<< HEAD
-                    <button
-                        class="faq-toggle w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition duration-300 focus:outline-none"
-                        data-target="faq-4">
-                        <div class="flex items-center">
-                            <span
-                                class="bg-ucs-red text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4">4</span>
-                            <h3 class="text-xl font-bold text-ucs-red">¿Qué sucede después de enviar mi proyecto y
-                                cuánto tiempo tardan en revisarlo?</h3>
-=======
                     <button class="faq-toggle w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition duration-300 focus:outline-none" data-target="faq-4">
                         <div class="flex items-center">
                             <span class="bg-ucs-red text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4">4</span>
                             <h3 class="text-xl font-bold text-ucs-red">¿Qué sucede después de enviar mi proyecto y cuánto tiempo tardan en revisarlo?</h3>
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                         </div>
                         <i class="fas fa-chevron-down text-ucs-red text-xl transition-transform duration-300"></i>
                     </button>
                     <div id="faq-4" class="faq-content hidden px-6 pb-6">
                         <p class="text-gray-700 leading-relaxed ml-12">
-<<<<<<< HEAD
-                            Después del envío, el proyecto pasa a la Coordinación de Proyectos para la revisión formal.
-                            Los tiempos pueden variar según la carga de trabajo y complejidad, pero el sistema te
-                            notificará por correo electrónico y actualizará el estatus en tu perfil tan pronto como haya
-                            una decisión.
-=======
                             Después del envío, el proyecto pasa a la Coordinación de Proyectos para la revisión formal. Los tiempos pueden variar según la carga de trabajo y complejidad, pero el sistema te notificará por correo electrónico y actualizará el estatus en tu perfil tan pronto como haya una decisión.
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                         </p>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-<<<<<<< HEAD
-                    <button
-                        class="faq-toggle w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition duration-300 focus:outline-none"
-                        data-target="faq-5">
-                        <div class="flex items-center">
-                            <span
-                                class="bg-ucs-red text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4">5</span>
-                            <h3 class="text-xl font-bold text-ucs-red">¿Qué significa si mi proyecto es "Devuelto con
-                                Observaciones"?</h3>
-=======
                     <button class="faq-toggle w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition duration-300 focus:outline-none" data-target="faq-5">
                         <div class="flex items-center">
                             <span class="bg-ucs-red text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4">5</span>
                             <h3 class="text-xl font-bold text-ucs-red">¿Qué significa si mi proyecto es "Devuelto con Observaciones"?</h3>
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                         </div>
                         <i class="fas fa-chevron-down text-ucs-red text-xl transition-transform duration-300"></i>
                     </button>
                     <div id="faq-5" class="faq-content hidden px-6 pb-6">
                         <p class="text-gray-700 leading-relaxed ml-12">
-<<<<<<< HEAD
-                            Significa que el equipo revisor ha encontrado aspectos que necesitan ser corregidos o
-                            aclarados. Debes acceder a tu proyecto, descargar el documento con las observaciones
-                            detalladas, realizar los cambios necesarios y subir la versión corregida de nuevo al sistema
-                            para una segunda revisión.
-=======
                             Significa que el equipo revisor ha encontrado aspectos que necesitan ser corregidos o aclarados. Debes acceder a tu proyecto, descargar el documento con las observaciones detalladas, realizar los cambios necesarios y subir la versión corregida de nuevo al sistema para una segunda revisión.
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                         </p>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-<<<<<<< HEAD
-                    <button
-                        class="faq-toggle w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition duration-300 focus:outline-none"
-                        data-target="faq-6">
-                        <div class="flex items-center">
-                            <span
-                                class="bg-ucs-red text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4">6</span>
-                            <h3 class="text-xl font-bold text-ucs-red">¿Cómo obtengo la aprobación final de mi proyecto?
-                            </h3>
-=======
                     <button class="faq-toggle w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition duration-300 focus:outline-none" data-target="faq-6">
                         <div class="flex items-center">
                             <span class="bg-ucs-red text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4">6</span>
                             <h3 class="text-xl font-bold text-ucs-red">¿Cómo obtengo la aprobación final de mi proyecto?</h3>
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                         </div>
                         <i class="fas fa-chevron-down text-ucs-red text-xl transition-transform duration-300"></i>
                     </button>
                     <div id="faq-6" class="faq-content hidden px-6 pb-6">
                         <p class="text-gray-700 leading-relaxed ml-12">
-<<<<<<< HEAD
-                            Cuando el proyecto cumpla con todos los requisitos y los revisores lo validen, su estatus
-                            cambiará a "Aprobado". En ese momento, podrás descargar el Acta de Aprobación o el documento
-                            oficial que certifica que tu proyecto ha sido formalmente aceptado por la UCS.
-=======
                             Cuando el proyecto cumpla con todos los requisitos y los revisores lo validen, su estatus cambiará a "Aprobado". En ese momento, podrás descargar el Acta de Aprobación o el documento oficial que certifica que tu proyecto ha sido formalmente aceptado por la UCS.
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                         </p>
                     </div>
                 </div>
@@ -1011,14 +676,7 @@
             <div class="grid md:grid-cols-3 gap-8">
                 <div>
                     <div class="flex items-center mb-4">
-<<<<<<< HEAD
-                        <img class="h-8 w-auto mr-3"
-                            src="https://upload.wikimedia.org/wikipedia/commons/7/74/Logo_de_la_Universidad_Ciencias_de_la_Salud.png"
-                            alt="UCS Logo"
-                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-=======
                         <img class="h-8 w-auto mr-3" src="https://upload.wikimedia.org/wikipedia/commons/7/74/Logo_de_la_Universidad_Ciencias_de_la_Salud.png" alt="UCS Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                         <div class="hidden items-center">
                             <i class="fas fa-graduation-cap text-ucs-red text-2xl mr-3"></i>
                         </div>
@@ -1031,18 +689,9 @@
                 <div>
                     <h4 class="text-lg font-semibold mb-4 text-ucs-red">Enlaces Rápidos</h4>
                     <ul class="space-y-2">
-<<<<<<< HEAD
-                        <li><a href="#inicio"
-                                class="text-gray-600 hover:text-ucs-red transition duration-300">Inicio</a></li>
-                        <li><a href="#proceso"
-                                class="text-gray-600 hover:text-ucs-red transition duration-300">Proceso</a></li>
-                        <li><a href="#sobre-ucs" class="text-gray-600 hover:text-ucs-red transition duración-300">Sobre
-                                UCS</a></li>
-=======
                         <li><a href="#inicio" class="text-gray-600 hover:text-ucs-red transition duration-300">Inicio</a></li>
                         <li><a href="#proceso" class="text-gray-600 hover:text-ucs-red transition duration-300">Proceso</a></li>
-                        <li><a href="#sobre-ucs" class="text-gray-600 hover:text-ucs-red transition duración-300">Sobre UCS</a></li>
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
+                        <li><a href="#sobre-ucs" class="text-gray-600 hover:text-ucs-red transition duration-300">Sobre UCS</a></li>
                     </ul>
                 </div>
                 <div>
@@ -1058,13 +707,8 @@
                 </div>
             </div>
             <div class="border-t border-gray-300 mt-8 pt-8 text-center">
-<<<<<<< HEAD
                 <p class="text-gray-600">
-=======
-                 <p class="text-gray-600">
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                     Sistema de Registro y Control de Proyectos (SRCP) Copyright © 2025 by Miguel M, Genesis S, Leonel G,
-                    l
                     <a href="https://creativecommons.org/licenses/by/4.0">Licensed under CC BY-NC-SA 4.0
                         Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
                 </p></a>
@@ -1074,20 +718,12 @@
 
     <script>
         // Mobile menu toggle
-<<<<<<< HEAD
-        document.addEventListener('DOMContentLoaded', function () {
-=======
         document.addEventListener('DOMContentLoaded', function() {
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
 
             if (mobileMenuButton && mobileMenu) {
-<<<<<<< HEAD
-                mobileMenuButton.addEventListener('click', function () {
-=======
                 mobileMenuButton.addEventListener('click', function() {
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                     mobileMenu.classList.toggle('hidden');
                 });
             }
@@ -1095,11 +731,7 @@
             // Smooth scrolling for navigation links
             const navLinks = document.querySelectorAll('a[href^="#"]');
             navLinks.forEach(link => {
-<<<<<<< HEAD
-                link.addEventListener('click', function (e) {
-=======
                 link.addEventListener('click', function(e) {
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                     e.preventDefault();
                     const targetId = this.getAttribute('href');
                     const targetSection = document.querySelector(targetId);
@@ -1114,11 +746,7 @@
             });
 
             // Add scroll effect to navigation
-<<<<<<< HEAD
-            window.addEventListener('scroll', function () {
-=======
             window.addEventListener('scroll', function() {
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                 const nav = document.querySelector('nav');
                 if (window.scrollY > 100) {
                     nav.classList.add('bg-opacity-95', 'backdrop-blur-sm');
@@ -1129,11 +757,7 @@
 
             // Animate elements on scroll
             const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
-<<<<<<< HEAD
-            const observer = new IntersectionObserver(function (entries) {
-=======
             const observer = new IntersectionObserver(function(entries) {
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                 entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('animate-fade-in'); } });
             }, observerOptions);
 
@@ -1143,11 +767,7 @@
             // Add click handlers for CTA buttons (ripple)
             const ctaButtons = document.querySelectorAll('a, button');
             ctaButtons.forEach(button => {
-<<<<<<< HEAD
-                button.addEventListener('click', function (e) {
-=======
                 button.addEventListener('click', function(e) {
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                     const ripple = document.createElement('span');
                     const rect = this.getBoundingClientRect();
                     const size = Math.max(rect.width, rect.height);
@@ -1167,11 +787,7 @@
             // FAQ Accordion functionality
             const faqToggles = document.querySelectorAll('.faq-toggle');
             faqToggles.forEach(toggle => {
-<<<<<<< HEAD
-                toggle.addEventListener('click', function () {
-=======
                 toggle.addEventListener('click', function() {
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                     const targetId = this.getAttribute('data-target');
                     const content = document.getElementById(targetId);
                     const icon = this.querySelector('i');
@@ -1205,9 +821,4 @@
         });
     </script>
 </body>
-<<<<<<< HEAD
-
 </html>
-=======
-</html>
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4

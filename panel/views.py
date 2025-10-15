@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.db.models import Q, Count
@@ -13,21 +13,20 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.conf import settings
+import os
 
 from appsistem.forms import (
     ProyectoForm,
     RegistrationStep1Form,
     RegistrationStep2Form,
+    validate_document_file,
     LoginWithCaptchaForm,
 )
 from appsistem.models import (
     Pnf, Trayecto, Proyecto, Seccion, Momento, MomentoVersion,
     Notification, Profile
 )
-<<<<<<< HEAD
 from appsistem.forms import PnfForm
-=======
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
 
 # =========================
 # Utilidades
@@ -84,22 +83,25 @@ def admin_logout(request):
 
 @login_required(login_url='/panel/login')
 def dashboard(request):
-    # Estadísticas básicas
-    total = Proyecto.objects.count()
-    sin_revisar = Proyecto.objects.filter(revisado=False).count()
-    aprobados = Proyecto.objects.filter(estado='APROBADO').count()
-    rechazados = Proyecto.objects.filter(estado='RECHAZADO').count()
+    # Estadísticas básicas (excluyendo proyectos en papelera)
+    total = Proyecto.objects.filter(is_trashed=False).count()
+    sin_revisar = Proyecto.objects.filter(revisado=False, is_trashed=False).count()
+    aprobados = Proyecto.objects.filter(estado_revision='APROBADO', is_trashed=False).count()
+    rechazados = Proyecto.objects.filter(estado_revision='RECHAZADO', is_trashed=False).count()
+    en_revision = Proyecto.objects.filter(estado_revision='EN_REVISION', is_trashed=False).count()
+    pendientes = Proyecto.objects.filter(estado_revision='PENDIENTE', is_trashed=False).count()
     usuarios_activos = User.objects.filter(is_active=True).count()
 
-    # Estadísticas por PNF
+    # Estadísticas por PNF (excluyendo proyectos en papelera)
     pnf_stats = (
         Proyecto.objects
+        .filter(is_trashed=False)
         .values('pnf__nombre_pnf')
         .annotate(
             total_proyectos=Count('id'),
-            aprobados=Count('id', filter=Q(estado='APROBADO')),
-            rechazados=Count('id', filter=Q(estado='RECHAZADO')),
-            pendientes=Count('id', filter=Q(estado__in=['PENDIENTE', 'EN_REVISION']))
+            aprobados=Count('id', filter=Q(estado_revision='APROBADO')),
+            rechazados=Count('id', filter=Q(estado_revision='RECHAZADO')),
+            pendientes=Count('id', filter=Q(estado_revision__in=['PENDIENTE', 'EN_REVISION']))
         )
         .order_by('-total_proyectos')
     )
@@ -108,7 +110,13 @@ def dashboard(request):
     total_pnfs = Pnf.objects.count()
 
     # Proyectos sin aprobar (pendientes + en revisión)
-    proyectos_sin_aprobar = Proyecto.objects.filter(estado__in=['PENDIENTE', 'EN_REVISION']).count()
+    proyectos_sin_aprobar = Proyecto.objects.filter(
+        Q(estado_revision='PENDIENTE') |
+        Q(estado_revision='EN_REVISION') | 
+        Q(estado_revision__isnull=True) | 
+        Q(estado_revision='') |
+        ~Q(estado_revision__in=['APROBADO', 'RECHAZADO'])
+    ).count()
 
     # Usuarios registrados por PNF
     usuarios_por_pnf = (
@@ -136,13 +144,23 @@ def dashboard(request):
     momentos_con_correcciones = Momento.objects.filter(estado_revision='CON_CORRECCIONES').count()
     momentos_pendientes = Momento.objects.filter(estado_revision='PENDIENTE').count()
 
-    # Proyectos recientes
-    recent_projects = Proyecto.objects.select_related('pnf', 'usuario').order_by('-fecha_subido')[:6]
+    # Proyectos recientes (excluyendo proyectos en papelera)
+    recent_projects = Proyecto.objects.filter(is_trashed=False).select_related('pnf', 'usuario').order_by('-fecha_subido')[:6]
 
-    # Estadísticas de estados de proyectos
-    estados_proyectos = (
+    # Estadísticas de estados geográficos (excluyendo proyectos en papelera)
+    estados_geograficos = (
         Proyecto.objects
-        .values('estado')
+        .filter(estado__isnull=False, is_trashed=False)
+        .values('estado__nombre')
+        .annotate(cantidad=Count('id'))
+        .order_by('-cantidad')
+    )
+
+    # Estadísticas de estados de revisión de proyectos (para el gráfico principal) (excluyendo proyectos en papelera)
+    estados_revision_stats = (
+        Proyecto.objects
+        .filter(is_trashed=False)
+        .values('estado_revision')
         .annotate(cantidad=Count('id'))
         .order_by('-cantidad')
     )
@@ -153,6 +171,8 @@ def dashboard(request):
         'sin_revisar': sin_revisar,
         'aprobados': aprobados,
         'rechazados': rechazados,
+        'en_revision': en_revision,
+        'pendientes': pendientes,
         'usuarios_activos': usuarios_activos,
         'proyectos_sin_aprobar': proyectos_sin_aprobar,
         
@@ -170,7 +190,8 @@ def dashboard(request):
         
         # Otros datos
         'recent_projects': recent_projects,
-        'estados_proyectos': estados_proyectos,
+        'estados_geograficos': estados_geograficos,
+        'estados_revision_stats': estados_revision_stats,
     })
 
 # =========================
@@ -179,13 +200,14 @@ def dashboard(request):
 
 @login_required(login_url='/panel/login')
 def projects_list(request):
-    qs = Proyecto.objects.select_related('pnf', 'trayecto')
+    qs = Proyecto.objects.select_related('pnf', 'trayecto').filter(is_trashed=False)
 
     pnf_raw = request.GET.get('pnf')
     tray_raw = request.GET.get('trayecto')
     tutor = norm(request.GET.get('tutor'))
     fecha = norm(request.GET.get('fecha'))  # YYYY-MM-DD
     q = norm(request.GET.get('q'))
+    estado_revision = request.GET.get('estado_revision')
 
     pnf = norm(pnf_raw)
     tray = norm(tray_raw)
@@ -206,21 +228,37 @@ def projects_list(request):
             Q(cedula__icontains=q) |
             Q(titulo__icontains=q)
         )
+    if estado_revision:
+        qs = qs.filter(estado_revision=estado_revision)
 
     # Conteos por estado sobre TODO el conjunto filtrado (no solo la página)
-    pending_count = qs.filter(estado='PENDIENTE').count()
-    approved_count = qs.filter(estado='APROBADO').count()
-    rejected_count = qs.filter(estado='RECHAZADO').count()
+    # Los proyectos que se muestran como "En Revisión" en la tabla son:
+    # - Los que tienen estado 'EN_REVISION' 
+    # - Los que tienen estado nulo o vacío (se muestran como "En Revisión" por defecto)
+    # - Los que tienen estados no reconocidos (como 'FALCON')
+    en_revision_count = qs.filter(
+        Q(estado_revision='EN_REVISION') | 
+        Q(estado_revision__isnull=True) | 
+        Q(estado_revision='') |
+        ~Q(estado_revision__in=['PENDIENTE', 'APROBADO', 'RECHAZADO'])
+    ).count()
+    pending_count = qs.filter(estado_revision='PENDIENTE').count()
+    approved_count = qs.filter(estado_revision='APROBADO').count()
+    rejected_count = qs.filter(estado_revision='RECHAZADO').count()
 
     paginator = Paginator(qs.order_by('-fecha_subido'), 20)
     page_obj = paginator.get_page(request.GET.get('page'))
 
+    # Contar proyectos en papelera
+    trash_count = Proyecto.objects.filter(is_trashed=True).count()
+    
     return render(request, 'panel/projects_list.html', {
         'page_obj': page_obj,
         'pnfs': Pnf.objects.all(),
         'trayectos': Trayecto.objects.all(),
-        'filters': {'pnf': pnf, 'trayecto': tray, 'tutor': tutor, 'fecha': fecha, 'q': q},
-        'stats': {'pendientes': pending_count, 'aprobados': approved_count, 'rechazados': rejected_count},
+        'filters': {'pnf': pnf, 'trayecto': tray, 'tutor': tutor, 'fecha': fecha, 'q': q, 'estado_revision': estado_revision},
+        'stats': {'pendientes': pending_count, 'en_revision': en_revision_count, 'aprobados': approved_count, 'rechazados': rejected_count},
+        'trash_count': trash_count,
     })
 
 @login_required(login_url='/panel/login')
@@ -243,8 +281,8 @@ def project_detail(request, pk):
         if request.POST.get('action') == 'aprobar_proyecto':
             if all_momentos_aprobados:
                 proyecto.revisado = True
-                proyecto.estado = 'APROBADO'
-                proyecto.save(update_fields=['revisado', 'estado'])
+                proyecto.estado_revision = 'APROBADO'
+                proyecto.save(update_fields=['revisado', 'estado_revision'])
                 messages.success(request, 'Proyecto marcado como APROBADO.')
                 Notification.objects.create(
                     recipient=proyecto.usuario,
@@ -257,8 +295,8 @@ def project_detail(request, pk):
 
         if request.POST.get('action') == 'desaprobar_proyecto':
             proyecto.revisado = False
-            proyecto.estado = 'RECHAZADO'
-            proyecto.save(update_fields=['revisado', 'estado'])
+            proyecto.estado_revision = 'RECHAZADO'
+            proyecto.save(update_fields=['revisado', 'estado_revision'])
             messages.success(request, 'Proyecto marcado como RECHAZADO.')
             Notification.objects.create(
                 recipient=proyecto.usuario,
@@ -269,8 +307,8 @@ def project_detail(request, pk):
 
         if request.POST.get('action') == 'quitar_aprobacion':
             proyecto.revisado = False
-            proyecto.estado = 'PENDIENTE'
-            proyecto.save(update_fields=['revisado', 'estado'])
+            proyecto.estado_revision = 'PENDIENTE'
+            proyecto.save(update_fields=['revisado', 'estado_revision'])
             messages.success(request, 'Aprobación del proyecto removida. Estado cambiado a PENDIENTE.')
             Notification.objects.create(
                 recipient=proyecto.usuario,
@@ -281,8 +319,8 @@ def project_detail(request, pk):
 
         if request.POST.get('action') == 'quitar_desaprobacion':
             proyecto.revisado = False
-            proyecto.estado = 'PENDIENTE'
-            proyecto.save(update_fields=['revisado', 'estado'])
+            proyecto.estado_revision = 'PENDIENTE'
+            proyecto.save(update_fields=['revisado', 'estado_revision'])
             messages.success(request, 'Desaprobación del proyecto removida. Estado cambiado a PENDIENTE.')
             Notification.objects.create(
                 recipient=proyecto.usuario,
@@ -307,6 +345,13 @@ def project_detail(request, pk):
                 except ValueError:
                     pass
             if archivo:
+                # Validar tipo de archivo
+                try:
+                    validate_document_file(archivo)
+                except ValidationError as e:
+                    messages.error(request, str(e))
+                    return redirect('panel:project_detail', pk=pk)
+                
                 proyecto.archivo = archivo
 
             proyecto.save()
@@ -327,6 +372,13 @@ def project_detail(request, pk):
             momento.save()
 
             if m_archivo:
+                # Validar tipo de archivo
+                try:
+                    validate_document_file(m_archivo)
+                except ValidationError as e:
+                    messages.error(request, str(e))
+                    return redirect('panel:project_detail', pk=pk)
+                
                 MomentoVersion.objects.create(
                     momento=momento,
                     archivo=m_archivo,
@@ -352,7 +404,7 @@ def project_detail(request, pk):
 
     return render(request, 'panel/project_detail.html', {
         'proyecto': proyecto,
-        'ESTADOS': Proyecto.ESTADOS,
+        'ESTADOS': Proyecto.ESTADOS_REVISION,
         'momentos': momentos,
         'all_momentos_aprobados': all_momentos_aprobados,
         'keywords': keywords,
@@ -387,9 +439,13 @@ def users_list(request):
     paginator = Paginator(qs, 20)
     page_obj = paginator.get_page(request.GET.get('page'))
 
+    # Contar usuarios en papelera
+    users_trash_count = User.objects.filter(profile__is_trashed=True).count()
+
     return render(request, 'panel/users_list.html', {
         'page_obj': page_obj,
         'filters': {'nombre': nombre, 'cedula': cedula, 'q': q},
+        'users_trash_count': users_trash_count,
     })
 
 @login_required(login_url='/panel/login')
@@ -776,6 +832,13 @@ def momento_upload_version(request, momento_id):
     archivo = request.FILES.get('archivo')
     if not archivo:
         return redirect('proyecto_detalle', pk=momento.proyecto_id)
+    
+    # Validar tipo de archivo
+    try:
+        validate_document_file(archivo)
+    except ValidationError as e:
+        messages.error(request, str(e))
+        return redirect('proyecto_detalle', pk=momento.proyecto_id)
 
     MomentoVersion.objects.create(
         momento=momento,
@@ -927,7 +990,6 @@ def user_update(request, user_id):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({'ok': True})
     messages.success(request, 'Usuario actualizado correctamente.')
-<<<<<<< HEAD
     return redirect('panel:users_list')
 
 # =========================
@@ -1015,6 +1077,116 @@ def pnf_delete(request, pk):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({'ok': True})
     return redirect('panel:pnfs_list')
-=======
-    return redirect('panel:users_list')
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
+
+# =========================
+# PAPELERA DE PROYECTOS
+# =========================
+
+@login_required(login_url='/panel/login')
+@user_passes_test(is_admin)
+def trash_list(request):
+    """Lista de proyectos en papelera"""
+    proyectos = Proyecto.objects.filter(is_trashed=True).order_by('-trashed_at')
+    
+    # Filtros
+    search = request.GET.get('search', '')
+    if search:
+        proyectos = proyectos.filter(
+            Q(titulo__icontains=search) |
+            Q(usuario__username__icontains=search) |
+            Q(usuario__first_name__icontains=search) |
+            Q(usuario__last_name__icontains=search) |
+            Q(cedula__icontains=search)
+        )
+    
+    # Paginación
+    paginator = Paginator(proyectos, 20)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    
+    return render(request, 'panel/trash_list.html', {
+        'page_obj': page_obj,
+        'search': search,
+        'total_proyectos': proyectos.count(),
+    })
+
+@login_required(login_url='/panel/login')
+@user_passes_test(is_admin)
+def send_to_trash(request, proyecto_id):
+    """Enviar proyecto a papelera"""
+    proyecto = get_object_or_404(Proyecto, id=proyecto_id)
+    
+    if request.method == 'POST':
+        proyecto.is_trashed = True
+        proyecto.trashed_at = timezone.now()
+        proyecto.trashed_by = request.user
+        proyecto.save()
+        
+        messages.success(request, f'Proyecto "{proyecto.titulo}" enviado a papelera.')
+        return redirect('panel:trash_list')
+    
+    return render(request, 'panel/confirm_trash.html', {
+        'proyecto': proyecto,
+    })
+
+@login_required(login_url='/panel/login')
+@user_passes_test(is_admin)
+def restore_from_trash(request, proyecto_id):
+    """Restaurar proyecto desde papelera"""
+    proyecto = get_object_or_404(Proyecto, id=proyecto_id, is_trashed=True)
+    
+    if request.method == 'POST':
+        proyecto.is_trashed = False
+        proyecto.trashed_at = None
+        proyecto.trashed_by = None
+        proyecto.save()
+        
+        messages.success(request, f'Proyecto "{proyecto.titulo}" restaurado exitosamente.')
+        return JsonResponse({'success': True, 'message': 'Proyecto restaurado exitosamente'})
+    
+    # Si no es POST, redirigir a la papelera
+    return redirect('panel:trash_list')
+
+@login_required(login_url='/panel/login')
+@user_passes_test(is_admin)
+def permanent_delete(request, proyecto_id):
+    """Eliminar proyecto permanentemente con verificación de contraseña"""
+    proyecto = get_object_or_404(Proyecto, id=proyecto_id, is_trashed=True)
+    
+    if request.method == 'POST':
+        password = request.POST.get('password', '')
+        
+        # Verificar contraseña del administrador
+        if not request.user.check_password(password):
+            messages.error(request, 'Contraseña incorrecta. No se pudo eliminar el proyecto.')
+            return render(request, 'panel/confirm_permanent_delete.html', {
+                'proyecto': proyecto,
+                'error': 'Contraseña incorrecta'
+            })
+        
+        # Eliminar archivos asociados
+        if proyecto.archivo:
+            try:
+                if os.path.exists(proyecto.archivo.path):
+                    os.remove(proyecto.archivo.path)
+            except:
+                pass  # Ignorar errores de archivos
+        
+        # Eliminar momentos y versiones
+        for momento in proyecto.momentos.all():
+            for version in momento.versions.all():
+                try:
+                    if os.path.exists(version.archivo.path):
+                        os.remove(version.archivo.path)
+                except:
+                    pass
+            momento.delete()
+        
+        titulo = proyecto.titulo
+        proyecto.delete()
+        
+        messages.success(request, f'Proyecto "{titulo}" eliminado permanentemente.')
+        return redirect('panel:trash_list')
+    
+    return render(request, 'panel/confirm_permanent_delete.html', {
+        'proyecto': proyecto,
+    })

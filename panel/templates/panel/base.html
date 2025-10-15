@@ -5,10 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Panel Admin{% endblock %}</title>
-<<<<<<< HEAD
     <link rel="icon" type="image/x-icon" href="{% static 'img/mini.ico' %}">
-=======
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -25,6 +22,29 @@
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
     .animate-fade-in{animation:fadeIn .5s ease-out}
     .sidebar-collapsed{width:4rem}.sidebar-expanded{width:16rem}
+    
+    /* Fix para el bug del fondo activo cuando se contrae */
+    .sidebar-collapsed .nav-item.active {
+        background: #DC2626 !important;
+        color: white !important;
+        border-radius: 8px;
+        margin: 2px 4px;
+        padding: 8px !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        width: calc(100% - 8px) !important;
+        min-height: 40px !important;
+    }
+    
+    .sidebar-collapsed .nav-item.active i {
+        color: white !important;
+        margin: 0 !important;
+    }
+    
+    .sidebar-collapsed .nav-item.active .nav-text {
+        display: none !important;
+    }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -54,13 +74,10 @@
                   <i class="fas fa-users w-5"></i>
                   <span>Usuarios</span>
                 </a>
-<<<<<<< HEAD
                 <a href="{% url 'panel:pnfs_list' %}" class="flex items-center space-x-3 px-4 py-3 text-sm font-medium {% if request.resolver_match.url_name == 'pnfs_list' %}bg-ucs-red text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition-all">
                   <i class="fas fa-graduation-cap w-5"></i>
                   <span>PNFs</span>
                 </a>
-=======
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
                 <a href="{% url 'panel:notifications_list' %}" class="flex items-center space-x-3 px-4 py-3 text-sm font-medium {% if request.resolver_match.url_name == 'notifications_list' %}bg-ucs-red text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition-all">
                   <i class="fas fa-bell w-5"></i>
                   <span>Notificaciones</span>
@@ -162,13 +179,10 @@
                 <i class="fas fa-users w-5"></i>
                 <span class="nav-text">Usuarios</span>
             </a>
-<<<<<<< HEAD
             <a href="{% url 'panel:pnfs_list' %}" class="nav-item {% if request.resolver_match.url_name == 'pnfs_list' %}active bg-ucs-red text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-all">
                 <i class="fas fa-graduation-cap w-5"></i>
                 <span class="nav-text">PNFs</span>
             </a>
-=======
->>>>>>> cad832e520c2d7abef0436fc1fce62aa652d15c4
             <a href="{% url 'panel:notifications_list' %}" class="nav-item {% if request.resolver_match.url_name == 'notifications_list' %}active bg-ucs-red text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-all">
                 <i class="fas fa-bell w-5"></i>
                 <span class="nav-text">Notificaciones</span>

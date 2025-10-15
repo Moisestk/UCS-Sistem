@@ -6,7 +6,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),           # Admin de Django
     path('panel/', include('panel.urls')),     # Panel
     path('', include('appsistem.urls')),       # Sitio público
-    path('captcha/', include('captcha.urls')), # Captcha
 
     # Recuperación de contraseña personalizada (UI del panel)
     path('password_reset/', pr_views.custom_password_reset, name='password_reset'),

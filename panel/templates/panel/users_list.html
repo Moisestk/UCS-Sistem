@@ -14,15 +14,22 @@
       {% with role=user.profile.role|default:'ESTUDIANTE' %}
         {% if user.is_superuser or role == 'ADMIN' %}
           <a href="{% url 'panel:users_create' %}"
-             class="bg-ucs-red hover:bg-red-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center text-sm sm:text-base">
-            <i class="fas fa-user-plus mr-2"></i>Añadir Usuario
+             class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-ucs-red border border-ucs-red rounded-lg hover:bg-red-700 hover:border-red-700 transition-all">
+            <i class="fas fa-user-plus mr-2"></i>
+            Añadir Usuario
           </a>
         {% endif %}
       {% endwith %}
 
       <a href="{% url 'panel:users_trash_list' %}" 
-         class="bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 px-4 sm:px-6 py-2 sm:py-3 rounded-xl hover:from-gray-200 hover:to-gray-300 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center text-sm sm:text-base">
-        <i class="fas fa-trash-alt mr-2"></i>Papelera
+         class="inline-flex items-center px-4 py-2 text-sm font-medium text-orange-700 bg-orange-50 border border-orange-200 rounded-lg hover:bg-orange-100 hover:text-orange-800 transition-all">
+        <i class="fas fa-trash mr-2"></i>
+        Papelera
+        {% if users_trash_count > 0 %}
+        <span class="ml-2 px-2 py-0.5 text-xs font-medium bg-orange-200 text-orange-800 rounded-full">
+          {{ users_trash_count }}
+        </span>
+        {% endif %}
       </a>
     </div>
   </div>

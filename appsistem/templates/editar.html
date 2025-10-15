@@ -7,6 +7,18 @@
 {% endblock %}
 
 {% block content %}
+<!-- Messages -->
+{% if messages %}
+    <div class="mb-6">
+        {% for message in messages %}
+            <div class="{% if message.tags == 'error' %}bg-red-50 border-red-200 text-red-800{% else %}bg-green-50 border-green-200 text-green-800{% endif %} border rounded-lg p-4 flex items-center">
+                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} mr-2"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
 <!-- Welcome Section -->
 <div class="mb-8">
     <div class="bg-gradient-to-r from-ucs-red to-red-700 rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden">
@@ -194,9 +206,16 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         <i class="fas fa-map-marker-alt mr-1 text-ucs-red"></i>Estado
                     </label>
-                    <input class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:border-ucs-red focus:ring-2 focus:ring-red-100 transition-all" 
-                           type="text" name="estado" value="{{ form.estado.value|default:'' }}" 
-                           placeholder="Estado donde se desarrolla" />
+                    
+                    
+                    <select name="estado" class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:border-ucs-red focus:ring-2 focus:ring-red-100 transition-all">
+                        <option value="">Seleccione un estado</option>
+                        {% for estado in form.estado.field.queryset %}
+                            <option value="{{ estado.id }}" {% if form.estado.value == estado.id or proyecto.estado.id == estado.id %}selected{% endif %}>
+                                {{ estado.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
                     {% if form.estado.errors %}
                         <p class="text-sm text-red-600 mt-1 flex items-center">
                             <i class="fas fa-exclamation-circle mr-1"></i>{{ form.estado.errors }}
@@ -268,6 +287,7 @@
         </div>
 
         <input type="hidden" name="usuario" value="{{ user.id }}" />
+        <input type="hidden" name="estado_revision" value="{{ proyecto.estado_revision|default:'PENDIENTE' }}" />
         
         <!-- Submit Button -->
         <div class="pt-6 border-t border-gray-200">

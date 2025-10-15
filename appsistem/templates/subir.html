@@ -1,4 +1,5 @@
 {% extends 'index.html' %}
+{% load static %}
 {% block title %}Registro de Proyecto | SRP{% endblock %}
 {% block breadcrumb %}<span class="text-ucs-red font-medium">Registro</span>{% endblock %}
 
@@ -178,9 +179,14 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         <i class="fas fa-map-marker-alt mr-1 text-ucs-red"></i>Estado
                     </label>
-                    <input class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:border-ucs-red focus:ring-2 focus:ring-red-100 transition-all" 
-                           type="text" name="estado" value="{{form.estado.value|default:''}}" 
-                           placeholder="Estado donde se desarrolla" />
+                    <select name="estado" class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:border-ucs-red focus:ring-2 focus:ring-red-100 transition-all">
+                        <option value="">Seleccione un estado</option>
+                        {% for estado in form.estado.field.queryset %}
+                            <option value="{{ estado.id }}" {% if form.estado.value == estado.id %}selected{% endif %}>
+                                {{ estado.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
                     {% if form.estado.errors %}
                         <p class="text-sm text-red-600 mt-1 flex items-center">
                             <i class="fas fa-exclamation-circle mr-1"></i>{{form.estado.errors}}
@@ -251,7 +257,26 @@
             </div>
         </div>
 
+        <!-- File Upload Section -->
+        <div class="mb-8">
+            <h4 class="text-md font-medium text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-file-upload mr-2 text-purple-600"></i>Archivo del Proyecto
+            </h4>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div class="flex items-start">
+                    <i class="fas fa-info-circle text-blue-600 mt-1 mr-3"></i>
+                    <div>
+                        <h5 class="text-sm font-medium text-blue-800 mb-2">Formatos permitidos</h5>
+                        <p class="text-sm text-blue-700 mb-3">Solo se permiten archivos PDF (.pdf) y Word (.docx). Tamaño máximo: 10MB.</p>
+                        <input type="file" name="archivo" accept=".pdf,.docx" 
+                               class="block w-full text-sm file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-ucs-red file:text-white hover:file:bg-red-700 file:transition-colors border border-gray-300 rounded-lg" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <input type="hidden" name="usuario" value="{{user.id}}" />
+        <input type="hidden" name="estado_revision" value="PENDIENTE" />
         
         <!-- Submit Button -->
         <div class="pt-6 border-t border-gray-200">
@@ -266,4 +291,8 @@
         </div>
     </form>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/file-validation.js' %}"></script>
 {% endblock %}
