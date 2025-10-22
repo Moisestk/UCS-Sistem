@@ -1,7 +1,5 @@
 # Configuración de reCAPTCHA
-
 ## Para Desarrollo Local
-
 El sistema está configurado para usar claves de prueba de Google en modo desarrollo, pero estas muestran el mensaje "This reCAPTCHA is for testing purposes only".
 
 ## Para Eliminar el Mensaje de Prueba

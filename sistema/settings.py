@@ -1,19 +1,21 @@
 import os
+try:
+    from dotenv import load_dotenv  # type: ignore
+    load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
+except Exception:
+    pass
 from pathlib import Path
 
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Development settings
-DEBUG = True
+DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() in ('1', 'true', 'yes')
 
 # Secret key (use env var in prod)
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'dev-secret-key-change-me-please-1234567890')
 
-ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost',
-]
+ALLOWED_HOSTS = [h.strip() for h in os.getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',') if h.strip()]
 
 INSTALLED_APPS = [
     # 'jazzmin',  # Comentado temporalmente
@@ -28,7 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'import_export',
-    'django_recaptcha',
+    'captcha',
 ]
 
 # Required middleware for sessions, auth, and messages
@@ -93,15 +95,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email (Gmail con App Password)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() in ('1', 'true', 'yes')
+EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'False').lower() in ('1', 'true', 'yes')
 
-EMAIL_HOST_USER = 'moisestodoroki@gmail.com'
-EMAIL_HOST_PASSWORD = 'wavkbgzxflznsjdq'   # sin espacios
-DEFAULT_FROM_EMAIL = 'Sistema UCS <moisestodoroki@gmail.com>'
-EMAIL_TIMEOUT = 20
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'webmaster@localhost')
+EMAIL_TIMEOUT = int(os.getenv('EMAIL_TIMEOUT', '20'))
 
 # reCAPTCHA Configuration
 import os
@@ -136,6 +138,20 @@ if DEBUG:
     print("MODO DESARROLLO: reCAPTCHA configurado para localhost")
     print(f"   Clave Publica: {RECAPTCHA_PUBLIC_KEY}")
     print(f"   Testing Mode: {RECAPTCHA_TESTING}")
+
+# Seguridad de cookies y HTTPS (endurecido en producción)
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SAMESITE = os.getenv('SESSION_COOKIE_SAMESITE', 'Lax')
+CSRF_COOKIE_SAMESITE = os.getenv('CSRF_COOKIE_SAMESITE', 'Lax')
+
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
+SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'True').lower() in ('1', 'true', 'yes') and not DEBUG
+SECURE_REFERRER_POLICY = os.getenv('SECURE_REFERRER_POLICY', 'same-origin')
 
 # Silenciar TODAS las advertencias de reCAPTCHA
 SILENCED_SYSTEM_CHECKS = [

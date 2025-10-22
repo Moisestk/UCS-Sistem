@@ -2,10 +2,35 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
-from django_recaptcha.fields import ReCaptchaField
-from django_recaptcha.widgets import ReCaptchaV2Checkbox
+from captcha.fields import ReCaptchaField
+from captcha.widgets import ReCaptchaV2Checkbox
 from .models import Proyecto, Trayecto, Pnf, Seccion, Estado
 import os
+
+def _sniff_is_pdf(file_obj):
+    pos = file_obj.tell() if hasattr(file_obj, 'tell') else None
+    try:
+        header = file_obj.read(5)
+        return header == b'%PDF-'
+    finally:
+        try:
+            if pos is not None:
+                file_obj.seek(pos)
+        except Exception:
+            pass
+
+def _sniff_is_docx(file_obj):
+    # DOCX es un ZIP: empieza con bytes PK\x03\x04
+    pos = file_obj.tell() if hasattr(file_obj, 'tell') else None
+    try:
+        header = file_obj.read(4)
+        return header == b'PK\x03\x04'
+    finally:
+        try:
+            if pos is not None:
+                file_obj.seek(pos)
+        except Exception:
+            pass
 
 def validate_document_file(file):
     """
@@ -27,6 +52,18 @@ def validate_document_file(file):
     # Validar tamaño del archivo (máximo 10MB)
     if file.size > 10 * 1024 * 1024:  # 10MB
         raise ValidationError('El archivo no puede ser mayor a 10MB.')
+
+    # Validar firma/contenido
+    try:
+        if ext == '.pdf' and not _sniff_is_pdf(file):
+            raise ValidationError('El archivo no tiene una cabecera PDF válida.')
+        if ext == '.docx' and not _sniff_is_docx(file):
+            raise ValidationError('El archivo no parece un documento DOCX válido (ZIP).')
+    except ValidationError:
+        raise
+    except Exception:
+        # En caso de error de lectura, rechazar por seguridad
+        raise ValidationError('No se pudo validar el contenido del archivo.')
 
 class PnfForm(forms.ModelForm):
     class Meta:
@@ -72,7 +109,9 @@ class SeccionForm(forms.ModelForm):
 class ProyectoForm(forms.ModelForm):
     class Meta:
         model = Proyecto
-        exclude = ['fecha_subida']
+        # El modelo usa 'fecha_subido' (auto_now_add); no es editable, así que no es necesario excluirlo
+        # Mantener todos los campos por defecto
+        fields = "__all__"
         widgets = {
             'archivo': forms.FileInput(attrs={
                 'accept': '.pdf,.docx',

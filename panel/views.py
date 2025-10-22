@@ -74,13 +74,6 @@ def admin_logout(request):
     logout(request)
     return redirect('panel:login')
 
-# Logout: disponible para cualquier usuario autenticado
-@login_required(login_url='/panel/login')
-def admin_logout(request):
-    logout(request)
-    # Llevar al login del panel
-    return redirect('panel:login')
-
 @login_required(login_url='/panel/login')
 def dashboard(request):
     # Estadísticas básicas (excluyendo proyectos en papelera)

@@ -31,8 +31,9 @@ urlpatterns = [
     path('panel/usuarios/crear/', views.panel_user_create, name='panel_user_create'),
 ]
 
-urlpatterns += [
-    re_path(r'^media/(?P<path>.*)$', serve, {
-        'document_root': settings.MEDIA_ROOT,
-    })
-]
+if settings.DEBUG:
+    urlpatterns += [
+        re_path(r'^media/(?P<path>.*)$', serve, {
+            'document_root': settings.MEDIA_ROOT,
+        })
+    ]

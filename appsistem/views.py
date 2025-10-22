@@ -11,6 +11,11 @@ from django.views.decorators.http import require_POST
 from django.utils import timezone
 from django.contrib.auth.password_validation import validate_password
 from django.db.models import Q
+try:
+    from ratelimit.decorators import ratelimit
+except Exception:
+    # Fallback para entornos donde el módulo se expone como django_ratelimit
+    from django_ratelimit.decorators import ratelimit  # type: ignore
 
 from .forms import ProyectoForm, RegistrationStep1Form, RegistrationStep2Form, LoginWithCaptchaForm, validate_document_file
 from .models import Pnf, Trayecto, Proyecto, Seccion, Momento, MomentoVersion, Notification, Profile
@@ -64,6 +69,7 @@ def registro(request):
     return render(request, 'register.html', {'step': '2', 'form2': form2})
 
 
+@ratelimit(key='ip', rate='5/m', block=True)
 def loginuser(request):
     form = LoginWithCaptchaForm(request, data=request.POST or None)
     if request.method == 'POST':
@@ -175,7 +181,7 @@ def misproyectos(request):
     return render(request, 'misproyectos.html', {'Proyectos': ProyectosRegistrados})
 
 
-@login_required(login_url='/editar')
+@login_required(login_url='/login')
 def editar(request, id):
     try:
         proyecto = get_object_or_404(Proyecto, id=id)
@@ -245,6 +251,7 @@ def student_project_detail(request, pk):
 
 
 @login_required(login_url='/login')
+@ratelimit(key='user', rate='20/h', block=True)
 def momento_upload_version(request, momento_id):
     if request.method != 'POST':
         return HttpResponseForbidden('Método no permitido')

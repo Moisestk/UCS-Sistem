@@ -9,9 +9,14 @@ from django.template.loader import render_to_string
 from django.core.mail import send_mail, get_connection
 from django.conf import settings
 from django.urls import reverse
+try:
+    from ratelimit.decorators import ratelimit
+except Exception:
+    from django_ratelimit.decorators import ratelimit  # type: ignore
 
 # ===== Recuperación de contraseña (UI pública) =====
 
+@ratelimit(key='ip', rate='5/m', block=True)
 def custom_password_reset(request):
     """
     Formulario para solicitar el enlace de restablecimiento.
