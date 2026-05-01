@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'import_export',
-    'captcha',
+    'django_recaptcha', # Usa el nombre completo para evitar conflictos
 ]
 
 # Required middleware for sessions, auth, and messages
